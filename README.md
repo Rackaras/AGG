@@ -6,6 +6,8 @@ Proyecto de la asignatura **Desarrollo de Aplicaciones Móviles** (Trabajo Autó
 
 **Integrantes:** Danny Espinoza · Raúl Cedeño · Wagner Zambrano
 
+📋 **[Plan de desarrollo, reparto de sprints y guía para clonar el repo](docs/PLAN.md)**
+
 ## Stack técnico
 
 | Capa | Tecnología |
