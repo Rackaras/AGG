@@ -3,6 +3,7 @@ package com.agg.app.data.mapper
 import com.agg.app.data.local.entity.BudgetWithCategory
 import com.agg.app.data.local.entity.CategoryEntity
 import com.agg.app.data.local.entity.CategoryTotalRow
+import com.agg.app.data.local.entity.CategoryWithUsage
 import com.agg.app.data.local.entity.SavingsGoalEntity
 import com.agg.app.data.local.entity.TransactionEntity
 import com.agg.app.data.local.entity.TransactionWithCategory
@@ -25,6 +26,8 @@ fun CategoryEntity.toDomain() = Category(
     type = type,
     isDefault = isDefault,
 )
+
+fun CategoryWithUsage.toDomain() = category.toDomain().copy(usageCount = uses)
 
 fun Category.toEntity() = CategoryEntity(
     id = id,

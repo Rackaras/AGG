@@ -1,5 +1,6 @@
 package com.agg.app.data.local.entity
 
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.agg.app.domain.model.TransactionType
@@ -13,4 +14,10 @@ data class CategoryEntity(
     val colorArgb: Long,
     val type: TransactionType,
     val isDefault: Boolean = false,
+)
+
+/** A category plus how many transactions use it (computed by the query, not stored). */
+data class CategoryWithUsage(
+    @Embedded val category: CategoryEntity,
+    val uses: Int,
 )

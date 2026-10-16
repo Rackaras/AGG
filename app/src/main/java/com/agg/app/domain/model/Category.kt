@@ -13,7 +13,20 @@ data class Category(
     val colorArgb: Long,
     val type: TransactionType,
     val isDefault: Boolean,
-)
+    /** Number of transactions registered with this category; drives usage-based ordering. */
+    val usageCount: Int = 0,
+) {
+    /** Predefined "Otros ..." categories: generic, so they never take priority. */
+    val isCatchAll: Boolean get() = isDefault && icon == CategoryIcon.OTHER
+}
+
+/**
+ * Shortcuts for the transaction form: the user's most used categories first. Ties keep the
+ * incoming order (custom categories, then the predefined seed order), so a brand-new user
+ * sees Comida, Transporte, Entretenimiento and Servicios, as in the prototype.
+ */
+fun List<Category>.quickAccess(limit: Int = 4): List<Category> =
+    sortedWith(compareBy<Category> { it.isCatchAll }.thenByDescending { it.usageCount }).take(limit)
 
 /** Icons a category can use; the UI layer maps each one to an ImageVector. */
 enum class CategoryIcon {

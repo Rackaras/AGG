@@ -166,10 +166,8 @@ fun TransactionFormScreen(
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal))
                     FieldLabel(stringResource(R.string.transaction_category))
                     CategorySelector(form.categories.filter { it.type == form.type }, form.categoryId, enabled, onCategory)
-                    val preferredIcons = listOf(CategoryIcon.FOOD, CategoryIcon.TRANSPORT, CategoryIcon.ENTERTAINMENT, CategoryIcon.SERVICES)
-                    val available = form.categories.filter { it.type == form.type }
-                    val quick = (preferredIcons.mapNotNull { icon -> available.firstOrNull { it.icon == icon } } + available)
-                        .distinctBy { it.id }.take(4)
+                    // Shortcuts adapt to the user: most used categories first (prototype order for new users).
+                    val quick = form.categories.filter { it.type == form.type }.quickAccess()
                     BoxWithConstraints(Modifier.fillMaxWidth()) {
                         val tileWidth = (maxWidth - 16.dp) / 3
                         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
