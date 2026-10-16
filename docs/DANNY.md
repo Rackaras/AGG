@@ -18,6 +18,8 @@ El formulario y el diálogo de categoría usan como referencia `images/02-nueva-
 
 Estos cambios no alteran el almacenamiento en centavos, las validaciones ni el flujo de edición. La fidelidad visual final y el comportamiento en pantallas pequeñas deben comprobarse en un dispositivo; compilar no demuestra igualdad con la imagen.
 
+La barra inferior conserva **Inicio · Historial · + · Presupuesto · Más**, con el botón central elevado, y también aparece durante la creación/edición como en la maqueta. Tocar **+** cuando el formulario ya está abierto no crea otra copia. Mientras se guarda una transacción o categoría se deshabilita la navegación para no abandonar una escritura pendiente; vuelve a habilitarse al terminar/salir del formulario. Las pantallas de Inicio y Presupuesto no se rediseñaron.
+
 ## Probar Historial (S4)
 
 1. Abrir **Historial**: aparecen los registros agrupados por mes, del más reciente al más antiguo.

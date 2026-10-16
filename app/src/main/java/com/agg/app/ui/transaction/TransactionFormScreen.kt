@@ -48,7 +48,11 @@ import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TransactionFormRoute(onBack: () -> Unit, viewModel: TransactionFormViewModel = hiltViewModel()) {
+fun TransactionFormRoute(
+    onBack: () -> Unit,
+    viewModel: TransactionFormViewModel = hiltViewModel(),
+    onBusyChanged: (Boolean) -> Unit = {},
+) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val data = (state as? UiState.Success)?.data
     var categoryDialog by rememberSaveable { mutableStateOf(false) }
@@ -58,6 +62,8 @@ fun TransactionFormRoute(onBack: () -> Unit, viewModel: TransactionFormViewModel
     var colorIndex by rememberSaveable { mutableIntStateOf(0) }
     val lifecycleOwner = LocalLifecycleOwner.current
     val busy = data?.let { it.saving || it.creatingCategory } == true
+    SideEffect { onBusyChanged(busy) }
+    DisposableEffect(Unit) { onDispose { onBusyChanged(false) } }
     BackHandler(busy) { /* A pending write must finish before leaving. */ }
     LaunchedEffect(viewModel, lifecycleOwner) {
         lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
