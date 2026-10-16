@@ -1,7 +1,9 @@
 package com.agg.app.ui
 
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
@@ -35,6 +37,7 @@ import com.agg.app.ui.navigation.TransactionFormRoute
  * The outer Scaffold does not consume system insets; each screen draws its own TopAppBar
  * (which already pads for the status bar).
  */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun AggApp(
     widthSizeClass: WindowWidthSizeClass = WindowWidthSizeClass.Compact,
@@ -53,11 +56,17 @@ fun AggApp(
         }
     }
     val onDestinationClick = { destination: TopLevelDestination ->
-        if (!formBusy) navController.navigateToTopLevel(destination)
+        if (!formBusy) {
+            // Close the form first: otherwise it stays saved inside the tab it was opened from
+            // and reappears when the user comes back to that tab.
+            if (isFormOpen) navController.popBackStack()
+            navController.navigateToTopLevel(destination)
+        }
     }
     // The approved prototype retains navigation while creating/editing a transaction.
     val showNavigation = selectedTopLevel != null || isFormOpen
-    val showBottomBar = showNavigation && !isWideLayout
+    // While typing, the keyboard covers the bottom bar; hiding it gives that space to the form.
+    val showBottomBar = showNavigation && !isWideLayout && !WindowInsets.isImeVisible
 
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),

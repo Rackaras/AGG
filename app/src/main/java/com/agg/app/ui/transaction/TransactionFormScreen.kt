@@ -136,7 +136,9 @@ fun TransactionFormScreen(
             )
         },
     ) { padding ->
-        Column(Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(horizontal = 20.dp, vertical = 8.dp),
+        // consumeWindowInsets + imePadding: the content shrinks above the keyboard and the focused
+        // field (e.g. the description) scrolls into view instead of being hidden behind it.
+        Column(Modifier.fillMaxSize().padding(padding).consumeWindowInsets(padding).imePadding().verticalScroll(rememberScrollState()).padding(horizontal = 20.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)) {
             when (state) {
                 UiState.Loading -> CircularProgressIndicator()
