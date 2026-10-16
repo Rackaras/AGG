@@ -12,6 +12,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.agg.app.R
 import com.agg.app.ui.components.PlaceholderScreen
+import com.agg.app.ui.more.MoreRoute as MoreContent
+import com.agg.app.ui.more.categories.CategoriesRoute as CategoriesContent
+import com.agg.app.ui.more.summary.MonthlySummaryRoute as MonthlySummaryContent
 import com.agg.app.ui.transaction.TransactionFormRoute as TransactionFormContent
 
 /**
@@ -22,6 +25,8 @@ import com.agg.app.ui.transaction.TransactionFormRoute as TransactionFormContent
 fun AggNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier,
+    /** True on wide windows (landscape, foldables, tablets): screens use two-pane layouts. */
+    isWideLayout: Boolean = false,
     onFormBusyChanged: (Boolean) -> Unit = {},
 ) {
     NavHost(
@@ -45,8 +50,17 @@ fun AggNavHost(
             PlaceholderScreen(title = stringResource(R.string.nav_budget))
         }
         composable<MoreRoute> {
-            // Sprint 6 (Raúl): MoreRoute(...)
-            PlaceholderScreen(title = stringResource(R.string.nav_more))
+            MoreContent(
+                isWideLayout = isWideLayout,
+                onOpenSummary = { navController.navigate(MonthlySummaryRoute) },
+                onOpenCategories = { navController.navigate(CategoriesRoute) },
+            )
+        }
+        composable<MonthlySummaryRoute> {
+            MonthlySummaryContent(onBack = { navController.popBackStack() }, isWideLayout = isWideLayout)
+        }
+        composable<CategoriesRoute> {
+            CategoriesContent(onBack = { navController.popBackStack() })
         }
         composable<TransactionFormRoute>(
             // The form slides up over the current tab and slides back down when closed.

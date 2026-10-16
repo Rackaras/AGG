@@ -253,11 +253,11 @@ private fun QuickCategoryTile(label: String, icon: ImageVector, color: Color, se
 }
 
 // User-selectable category data follows the six-color prototype palette, not the app theme.
-private val categoryColors = listOf(0xFF008C5AL, 0xFF42A5F5L, 0xFFAB47BCL, 0xFFFBC02DL, 0xFFEF5350L, 0xFF90A4AEL)
+internal val categoryColors = listOf(0xFF008C5AL, 0xFF42A5F5L, 0xFFAB47BCL, 0xFFFBC02DL, 0xFFEF5350L, 0xFF90A4AEL)
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun NewCategoryDialog(
+internal fun NewCategoryDialog(
     name: String, icon: CategoryIcon, colorIndex: Int, busy: Boolean, error: Int?,
     onName: (String) -> Unit, onIcon: (CategoryIcon) -> Unit, onColor: (Int) -> Unit,
     onDismiss: () -> Unit, onSave: () -> Unit,
