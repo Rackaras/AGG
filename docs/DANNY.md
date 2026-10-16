@@ -4,13 +4,19 @@ La implementación usa la base de `feature/s1-data-layer`. El Sprint 2 agrega el
 
 ## Probar Nueva transacción (S2)
 
-1. Abrir **+**, elegir Ingreso o Egreso, escribir el monto y seleccionar una categoría.
+1. Abrir **+**, elegir **Ingreso** o **Gasto**, escribir el monto y seleccionar una categoría en el desplegable o en los accesos rápidos.
 2. Guardar. La fecha predeterminada es hoy y la descripción es opcional (registro rápido).
 3. Para otra fecha, tocar el botón de fecha y usar el calendario.
 4. Para una categoría propia, tocar **Nueva categoría**, escribir el nombre y elegir ícono/color. La categoría pertenece al tipo de transacción seleccionado.
 5. Cerrar y abrir la app y comprobar la persistencia cuando se disponga de un dispositivo.
 
 Se admiten punto o coma decimal, con hasta dos decimales: `8.50` y `8,50` se guardan como `850` centavos. No se redondean importes con más decimales. El monto debe ser mayor que cero. Cambiar el tipo descarta una categoría incompatible. Una edición conserva su ID y su fecha salvo que se cambien expresamente los campos.
+
+## Diseño del formulario
+
+El formulario y el diálogo de categoría usan como referencia `images/02-nueva-transaccion.png` y `images/05-dialogo-nueva-categoria.png`: selección en píldoras, monto destacado, campos suaves, selector completo y cuadrícula de accesos rápidos, fecha localizada y guardado de ancho completo. El diálogo conserva todos los íconos disponibles, añade cierre superior y presenta la paleta de seis colores y las acciones inferiores del prototipo.
+
+Estos cambios no alteran el almacenamiento en centavos, las validaciones ni el flujo de edición. La fidelidad visual final y el comportamiento en pantallas pequeñas deben comprobarse en un dispositivo; compilar no demuestra igualdad con la imagen.
 
 ## Probar Historial (S4)
 

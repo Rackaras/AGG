@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="transaction_income">Ingreso</string>
-    <string name="transaction_expense">Egreso</string>
+    <string name="transaction_expense">Gasto</string>
     <string name="transaction_amount">Monto ($)</string>
     <string name="transaction_category">Categoría</string>
     <string name="transaction_new_category">Nueva categoría</string>
@@ -23,4 +23,12 @@
     <string name="transaction_retry">Reintentar</string>
     <string name="transaction_icon_option">Ícono %1$s</string>
     <string name="transaction_color_option">Color %1$d</string>
+    <string name="transaction_amount_label">Monto</string>
+    <string name="transaction_currency">$ </string>
+    <string name="transaction_amount_placeholder">0.00</string>
+    <string name="transaction_date_label">Fecha</string>
+    <string name="transaction_select_category">Selecciona una categoría</string>
+    <string name="transaction_description_placeholder">Ej. Almuerzo con amigos…</string>
+    <string name="transaction_save_form">Guardar transacción</string>
+    <string name="transaction_close_dialog">Cerrar nueva categoría</string>
 </resources>
