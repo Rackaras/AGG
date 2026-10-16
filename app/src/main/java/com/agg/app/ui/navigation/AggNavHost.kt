@@ -22,6 +22,7 @@ import com.agg.app.ui.transaction.TransactionFormRoute as TransactionFormContent
 fun AggNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier,
+    onFormBusyChanged: (Boolean) -> Unit = {},
 ) {
     NavHost(
         navController = navController,
@@ -52,7 +53,7 @@ fun AggNavHost(
             enterTransition = { slideIntoContainer(SlideDirection.Up, tween(FORM_ANIMATION_MS)) },
             popExitTransition = { slideOutOfContainer(SlideDirection.Down, tween(FORM_ANIMATION_MS)) },
         ) {
-            TransactionFormContent(onBack = { navController.popBackStack() })
+            TransactionFormContent(onBack = { navController.popBackStack() }, onBusyChanged = onFormBusyChanged)
         }
     }
 }

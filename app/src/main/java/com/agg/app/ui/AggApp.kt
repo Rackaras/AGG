@@ -5,6 +5,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -31,16 +34,23 @@ fun AggApp(
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = backStackEntry?.destination
     val selectedTopLevel = currentDestination?.topLevelDestination()
+    val isFormOpen = currentDestination?.hasRoute<TransactionFormRoute>() == true
+    var formBusy by remember { mutableStateOf(false) }
 
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         bottomBar = {
-            // The bottom bar is only shown on the four main tabs, not on the transaction form.
-            if (selectedTopLevel != null) {
+            // The approved prototype retains navigation while creating/editing a transaction.
+            if (selectedTopLevel != null || isFormOpen) {
                 AggBottomBar(
                     selectedDestination = selectedTopLevel,
-                    onDestinationClick = navController::navigateToTopLevel,
-                    onAddClick = { navController.navigate(TransactionFormRoute()) },
+                    enabled = !formBusy,
+                    onDestinationClick = { if (!formBusy) navController.navigateToTopLevel(it) },
+                    onAddClick = {
+                        if (!formBusy && !isFormOpen) {
+                            navController.navigate(TransactionFormRoute()) { launchSingleTop = true }
+                        }
+                    },
                 )
             }
         },
@@ -48,6 +58,7 @@ fun AggApp(
         AggNavHost(
             navController = navController,
             modifier = Modifier.padding(innerPadding),
+            onFormBusyChanged = { formBusy = it },
         )
     }
 }
