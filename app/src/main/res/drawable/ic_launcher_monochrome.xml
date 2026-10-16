@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Themed icon layer (Android 13+): single-colour leaves; the launcher applies the tint. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <path
+        android:pathData="M54,72 L54,80"
+        android:strokeWidth="3"
+        android:strokeColor="#FF000000"
+        android:strokeLineCap="round" />
+
+    <group
+        android:pivotX="54"
+        android:pivotY="74"
+        android:rotation="-42"
+        android:scaleX="0.85"
+        android:scaleY="0.85">
+        <path
+            android:fillColor="#FF000000"
+            android:pathData="M54,74 C44,64 42,44 54,30 C66,44 64,64 54,74 Z" />
+    </group>
+
+    <group
+        android:pivotX="54"
+        android:pivotY="74"
+        android:rotation="42"
+        android:scaleX="0.85"
+        android:scaleY="0.85">
+        <path
+            android:fillColor="#FF000000"
+            android:pathData="M54,74 C44,64 42,44 54,30 C66,44 64,64 54,74 Z" />
+    </group>
+
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M54,74 C44,64 42,44 54,30 C66,44 64,64 54,74 Z" />
+</vector>
