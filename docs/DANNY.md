@@ -49,4 +49,4 @@ Girar el teléfono, cambiar de pantalla o mandar la app al fondo no confirma el 
 ./gradlew :app:connectedDebugAndroidTest
 ```
 
-El segundo comando requiere un emulador o teléfono conectado. Compilar los tests instrumentados no equivale a ejecutarlos. Las pruebas unitarias usan repositorios falsos aislados; las pruebas instrumentadas existentes de Room prueban la capa de datos.
+El segundo comando requiere un emulador o teléfono conectado, desbloqueado y con pantalla activa durante toda la corrida. Si Compose informa `No compose hierarchies found`, comprobar primero que el host de pruebas esté visible y no detrás de la pantalla de bloqueo; no dar por hecho un fallo de la app. Compilar los tests instrumentados no equivale a ejecutarlos. Las pruebas unitarias usan repositorios falsos aislados; las pruebas instrumentadas existentes de Room prueban la capa de datos.
