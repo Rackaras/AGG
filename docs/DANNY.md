@@ -12,12 +12,25 @@ La implementación usa la base de `feature/s1-data-layer`. El Sprint 2 agrega el
 
 Se admiten punto o coma decimal, con hasta dos decimales: `8.50` y `8,50` se guardan como `850` centavos. No se redondean importes con más decimales. El monto debe ser mayor que cero. Cambiar el tipo descarta una categoría incompatible. Una edición conserva su ID y su fecha salvo que se cambien expresamente los campos.
 
+## Probar Historial (S4)
+
+1. Abrir **Historial**: aparecen los registros agrupados por mes, del más reciente al más antiguo.
+2. Usar **Todos / Ingresos / Egresos** y los filtros **Fecha** y **Categoría**. El rango incluye ambos días; **Limpiar filtros** vuelve a mostrar todo.
+3. Abrir el menú de un registro y tocar **Editar**. Se reutiliza el formulario S2; al guardar y volver, la lista se actualiza desde Room conservando los filtros.
+4. Tocar **Eliminar**: el registro se oculta temporalmente y aparece **Deshacer**. Deshacer lo vuelve a mostrar sin modificar la base de datos.
+5. Cerrar el aviso o dejar que termine confirma la eliminación. Si falla, el registro reaparece y se informa el error. Mientras haya un aviso pendiente, no se permite iniciar otra eliminación.
+
+Girar el teléfono, cambiar de pantalla o mandar la app al fondo no confirma el borrado: el aviso se ofrece de nuevo al volver si el ViewModel sigue vivo. Si el proceso termina antes de confirmar, el registro permanece guardado. No se intenta restaurar un registro borrado mediante la operación de edición.
+
 ## Código para explicar en el pitch
 
 - `domain/usecase/AddTransactionUseCase.kt`: valida monto, categoría/tipo y existencia del registro al editar antes de escribir por el repositorio.
 - `ui/transaction/TransactionFormViewModel.kt`: estado único, categorías reactivas, protección contra doble envío y eventos de navegación por Channel.
 - `ui/transaction/TransactionFormScreen.kt`: Route obtiene el ViewModel y observa el estado con lifecycle; Screen recibe estado y callbacks, sin acceso a Room.
-- `ui/navigation/AggNavHost.kt`: integra el formulario con la ruta tipada existente y mantiene la animación original.
+- `ui/navigation/AggNavHost.kt`: integra Historial y el formulario con las rutas tipadas existentes; mantiene las otras pantallas y la animación original.
+- `ui/history/HistoryViewModel.kt`: combina registros, categorías, filtros y eliminación pendiente; expone un único estado y confirma el borrado a través del repositorio existente.
+- `ui/history/HistoryRoute.kt`: observa el estado con lifecycle, maneja los diálogos y el aviso Deshacer, y entrega las acciones al ViewModel.
+- `ui/history/HistoryScreen.kt`: lista agrupada por mes, filtros y menús; recibe datos/callbacks sin ViewModel ni DAO.
 
 ## Verificación
 

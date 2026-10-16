@@ -33,8 +33,10 @@ class FakeTransactionRepository : TransactionRepository {
     val deleted = mutableListOf<Long>()
     val filters = mutableListOf<TransactionFilter>()
     var failure = false
+    var readFailure = false
     var categoryLookup: (Long) -> Category = { Category(it, "Food", CategoryIcon.FOOD, 0xFF388E3C, TransactionType.EXPENSE, true) }
     override fun observeTransactions(filter: TransactionFilter) = items.map { list ->
+        if (readFailure) error("Read failure")
         filters += filter
         list.filter { (filter.type == null || it.type == filter.type) &&
             (filter.categoryId == null || it.category.id == filter.categoryId) &&

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="history_all">Todos</string>
+    <string name="history_income">Ingresos</string>
+    <string name="history_expense">Egresos</string>
+    <string name="history_date">Fecha</string>
+    <string name="history_date_range">%1$s — %2$s</string>
+    <string name="history_category">Categoría</string>
+    <string name="history_all_categories">Todas las categorías</string>
+    <string name="history_clear_filters">Limpiar filtros</string>
+    <string name="history_edit">Editar</string>
+    <string name="history_delete">Eliminar</string>
+    <string name="history_actions">Opciones de transacción: %1$s, %2$s</string>
+    <string name="history_empty">No hay transacciones para estos filtros.</string>
+    <string name="history_load_error">No se pudo cargar el historial.</string>
+    <string name="history_delete_error">No se pudo eliminar la transacción. Volvé a intentarlo.</string>
+    <string name="history_date_error">La fecha inicial no puede ser posterior a la final.</string>
+    <string name="history_undo_message">Transacción oculta. Se eliminará al cerrar este aviso.</string>
+    <string name="history_undo">Deshacer</string>
+    <string name="history_close_notice">Cerrar aviso</string>
+    <string name="history_retry">Reintentar</string>
+    <string name="history_cancel">Cancelar</string>
+    <string name="history_apply">Aplicar</string>
+</resources>
