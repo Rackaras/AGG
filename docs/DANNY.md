@@ -26,6 +26,8 @@ Estos cambios no alteran el almacenamiento en centavos, las validaciones ni el f
 4. Tocar **Eliminar**: el registro se oculta temporalmente y aparece **Deshacer**. Deshacer lo vuelve a mostrar sin modificar la base de datos.
 5. Cerrar el aviso o dejar que termine confirma la eliminación. Si falla, el registro reaparece y se informa el error. Mientras haya un aviso pendiente, no se permite iniciar otra eliminación.
 
+La presentación sigue `images/03-historial.png`: pestañas en píldoras, filas compactas con separadores y círculos pastel para los íconos. La lupa abre la búsqueda por categoría existente y el botón de ajustes abre el rango de fechas; no se agregó búsqueda libre ni botones sin acción. La fecha de cada fila usa formato corto y distingue hoy.
+
 Girar el teléfono, cambiar de pantalla o mandar la app al fondo no confirma el borrado: el aviso se ofrece de nuevo al volver si el ViewModel sigue vivo. Si el proceso termina antes de confirmar, el registro permanece guardado. No se intenta restaurar un registro borrado mediante la operación de edición.
 
 ## Código para explicar en el pitch

@@ -21,4 +21,7 @@
     <string name="history_retry">Reintentar</string>
     <string name="history_cancel">Cancelar</string>
     <string name="history_apply">Aplicar</string>
+    <string name="history_search_category">Buscar por categoría</string>
+    <string name="history_adjust_dates">Ajustar fechas</string>
+    <string name="history_today_date">Hoy, %1$s</string>
 </resources>

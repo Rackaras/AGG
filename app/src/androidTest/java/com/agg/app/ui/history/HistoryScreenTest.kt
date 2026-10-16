@@ -47,6 +47,25 @@ class HistoryScreenTest {
         }
     }
 
+    @Test fun prototypeToolbarActionsOpenExistingFilters() {
+        var dateRequests = 0
+        var categoryRequests = 0
+        compose.setContent {
+            AGGTheme {
+                HistoryScreen(UiState.Success(HistoryData()), SnackbarHostState(),
+                    onType = {}, onDateFilter = { dateRequests++ }, onCategoryFilter = { categoryRequests++ },
+                    onClearFilters = {}, onRetry = {}, onEdit = {}, onDelete = {})
+            }
+        }
+        compose.onNodeWithContentDescription("Buscar por categoría").performClick()
+        compose.onNodeWithContentDescription("Ajustar fechas").performClick()
+        compose.onNodeWithText("Todos").assertIsSelected()
+        compose.runOnIdle {
+            assertEquals(1, categoryRequests)
+            assertEquals(1, dateRequests)
+        }
+    }
+
     @Test fun pendingDeletionDisablesAnotherDeleteButNotEdit() {
         compose.setContent {
             AGGTheme {
