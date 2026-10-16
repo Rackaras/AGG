@@ -1,3 +1,18 @@
 <resources>
     <string name="app_name">AGG</string>
+    <string name="app_tagline">Finanzas simples, grandes decisiones</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Inicio</string>
+    <string name="nav_history">Historial</string>
+    <string name="nav_budget">Presupuesto</string>
+    <string name="nav_more">Más</string>
+
+    <!-- Transaction form -->
+    <string name="new_transaction">Nueva transacción</string>
+    <string name="edit_transaction">Editar transacción</string>
+
+    <!-- Common -->
+    <string name="action_back">Volver</string>
+    <string name="placeholder_in_progress">Pantalla en construcción</string>
 </resources>

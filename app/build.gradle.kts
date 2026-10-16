@@ -49,6 +49,8 @@ dependencies {
     implementation(libs.androidx.activity.compose)
 
     // Lifecycle / ViewModel
+    // Pin coroutines so app and test runtimes share the same version (kotlinx-coroutines-test needs it)
+    implementation(libs.kotlinx.coroutines.android)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)

@@ -190,6 +190,7 @@ Cada sprint se trabaja en su propia rama `feature/…` y se integra con un PR re
 - [ ] El ViewModel solo usa repositorios o use cases inyectados, nunca DAOs.
 - [ ] Las escrituras a la BD son `suspend` y las lecturas son `Flow`.
 - [ ] Textos visibles en `strings.xml` y colores del `MaterialTheme`, sin valores sueltos.
+- [ ] La pantalla tiene fondo opaco (su raíz es un `Scaffold` o `Surface`); si no, durante la animación del formulario se ve la pantalla de atrás.
 - [ ] Probado en el emulador: los datos persisten al cerrar y abrir la app.
 - [ ] Mensaje de commit con Conventional Commits.
 

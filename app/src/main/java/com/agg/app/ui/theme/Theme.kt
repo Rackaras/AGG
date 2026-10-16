@@ -17,6 +17,9 @@ private val LightColorScheme = lightColorScheme(
     onPrimaryContainer = AggGreenDark,
     secondary = AggGreenDark,
     onSecondary = Color.White,
+    // Used by the selected NavigationBarItem indicator: green instead of the default lilac.
+    secondaryContainer = AggGreenContainer,
+    onSecondaryContainer = AggGreenDark,
     tertiary = CategoryBlue,
     error = ExpenseRed,
     background = Neutral99,
@@ -32,6 +35,8 @@ private val DarkColorScheme = darkColorScheme(
     primaryContainer = AggGreenContainerDark,
     onPrimaryContainer = AggGreenContainer,
     secondary = AggGreenLight,
+    secondaryContainer = AggGreenContainerDark,
+    onSecondaryContainer = AggGreenContainer,
     tertiary = CategoryBlue,
     error = ExpenseRedDarkTheme,
 )
