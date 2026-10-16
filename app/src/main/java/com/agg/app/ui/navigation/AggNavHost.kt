@@ -10,9 +10,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.toRoute
 import com.agg.app.R
 import com.agg.app.ui.components.PlaceholderScreen
+import com.agg.app.ui.transaction.TransactionFormRoute as TransactionFormContent
 
 /**
  * Single navigation graph of the app. Each sprint replaces its placeholder with the real
@@ -51,16 +51,8 @@ fun AggNavHost(
             // The form slides up over the current tab and slides back down when closed.
             enterTransition = { slideIntoContainer(SlideDirection.Up, tween(FORM_ANIMATION_MS)) },
             popExitTransition = { slideOutOfContainer(SlideDirection.Down, tween(FORM_ANIMATION_MS)) },
-        ) { backStackEntry ->
-            // Sprint 2 (Danny): TransactionFormRoute(onBack = navController::popBackStack).
-            // The ViewModel reads the argument with savedStateHandle.toRoute<TransactionFormRoute>().
-            val route = backStackEntry.toRoute<TransactionFormRoute>()
-            PlaceholderScreen(
-                title = stringResource(
-                    if (route.transactionId == 0L) R.string.new_transaction else R.string.edit_transaction
-                ),
-                onBack = { navController.popBackStack() },
-            )
+        ) {
+            TransactionFormContent(onBack = { navController.popBackStack() })
         }
     }
 }

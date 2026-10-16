@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="transaction_income">Ingreso</string>
+    <string name="transaction_expense">Egreso</string>
+    <string name="transaction_amount">Monto ($)</string>
+    <string name="transaction_category">Categoría</string>
+    <string name="transaction_new_category">Nueva categoría</string>
+    <string name="transaction_category_name">Nombre de la categoría</string>
+    <string name="transaction_category_icon">Ícono</string>
+    <string name="transaction_category_color">Color</string>
+    <string name="transaction_date">Fecha: %1$s</string>
+    <string name="transaction_description">Descripción (opcional)</string>
+    <string name="transaction_save">Guardar</string>
+    <string name="transaction_saving">Guardando…</string>
+    <string name="transaction_cancel">Cancelar</string>
+    <string name="transaction_select_date">Elegir fecha</string>
+    <string name="transaction_amount_error">Ingresá un monto mayor que cero con hasta dos decimales.</string>
+    <string name="transaction_category_error">Seleccioná una categoría del tipo de transacción elegido.</string>
+    <string name="transaction_name_error">Ingresá un nombre para la categoría.</string>
+    <string name="transaction_missing_error">La transacción ya no existe.</string>
+    <string name="transaction_storage_error">No se pudo guardar. Tus cambios siguen aquí; intentá de nuevo.</string>
+    <string name="transaction_load_error">No se pudo cargar la transacción.</string>
+    <string name="transaction_retry">Reintentar</string>
+    <string name="transaction_icon_option">Ícono %1$s</string>
+    <string name="transaction_color_option">Color %1$d</string>
+</resources>
