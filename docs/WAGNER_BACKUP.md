@@ -8,7 +8,7 @@ Inicio muestra datos reales observados de `TransactionRepository`: balance acumu
 
 El `ObserveDashboardUseCase` calcula los límites de mes usando un `Clock` inyectado. Sus flujos son de solo lectura; no crea transacciones ni datos iniciales. `HomeViewModel` expone Loading, Success o Error mediante un único `StateFlow`; el botón de reintento vuelve a suscribirse a la lectura.
 
-El acceso «Ver más» navega al destino existente Historial, que continúa siendo su placeholder. La ruta de Inicio y su dashboard pertenecen a S3; las secciones siguientes describen S5.
+El acceso «Ver más» navega al Historial integrado de S4. La ruta de Inicio y su dashboard pertenecen a S3; las secciones siguientes describen S5.
 
 ## Presupuestos (S5 — B2)
 
@@ -42,8 +42,8 @@ La denegación, desactivación o excepción de consulta/solicitud/publicación c
 
 Las pruebas de S3 cubren métricas del dashboard, límites de calendario, estados/reactividad del ViewModel y callbacks de «Ver más» y «Reintentar». Las pruebas de S5 cubren progreso de ahorro, validación y preservación del ID/fecha al editar, borradores independientes, bloqueo de escrituras duplicadas, callbacks de pantalla y política de avisos/permisos/fallos de plataforma.
 
-Antes de incorporar S3 desde main, S5 contaba con 64 pruebas unitarias aprobadas. Tras resolver los conflictos e incorporar el Dashboard, la suite combinada S3+S5 finalizó correctamente: 70 pruebas unitarias, sin fallos ni omisiones, y compilación correcta de los APK de la app y de pruebas. La revisión independiente de fuente confirmó que se conservaron las rutas, los callbacks de guardado/notificación y los helpers de pruebas de ambos sprints.
+Antes de incorporar S3 desde main, S5 contaba con 64 pruebas unitarias aprobadas. En una verificación previa de S3+S5, la suite combinada finalizó correctamente: 70 pruebas unitarias, sin fallos ni omisiones, y compilación correcta de los APK de la app y de pruebas. Ese resultado es evidencia histórica de esa combinación. Tras incorporar S4 y resolver sus conflictos con main, la suite integrada aprobó 82 pruebas unitarias, sin fallos ni omisiones, y compilaron los APK de la app y de pruebas. La revisión independiente de fuente no encontró bloqueos en la conciliación de las rutas y callbacks compartidos.
 
 Las pruebas instrumentadas solo se compilaron; no se ejecutaron automáticamente. La prueba manual en teléfono descrita a continuación corresponde a S5 antes de esta sincronización y no se presenta como una nueva prueba del contexto combinado.
 
-El usuario confirmó una prueba manual de S5 en su teléfono Android 36.1. Las capturas aportadas muestran presupuesto de $100, gasto de $80, disponible de $20, aviso dentro de la app y notificación Android al 80 %. No se incorporan al repositorio porque contienen información ajena a la app. Esta confirmación no equivale a una suite instrumentada exhaustiva: los demás recorridos no se afirman como observados independientemente. No se concedieron permisos automáticamente ni se modificaron otras aplicaciones.
+Históricamente, el usuario confirmó una prueba manual de S5 en su teléfono Android 36.1, antes de esta sincronización. Las capturas aportadas mostraban presupuesto de $100, gasto de $80, disponible de $20, aviso dentro de la app y notificación Android al 80 %. Esta observación no es aceptación del contexto integrado actual. No se incorporan al repositorio porque contienen información ajena a la app. Esta confirmación no equivale a una suite instrumentada exhaustiva: los demás recorridos no se afirman como observados independientemente. No se concedieron permisos automáticamente ni se modificaron otras aplicaciones.

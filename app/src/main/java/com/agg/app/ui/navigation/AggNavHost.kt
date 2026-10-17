@@ -12,8 +12,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.agg.app.R
 import com.agg.app.domain.model.BudgetAlert
-import com.agg.app.ui.components.PlaceholderScreen
 import com.agg.app.ui.budget.BudgetRoute as BudgetContent
+import com.agg.app.ui.components.PlaceholderScreen
+import com.agg.app.ui.history.HistoryRoute as HistoryContent
 import com.agg.app.ui.home.HomeRoute as HomeContent
 import com.agg.app.ui.transaction.TransactionFormRoute as TransactionFormContent
 
@@ -40,8 +41,7 @@ fun AggNavHost(
             HomeContent(onSeeAll = { navController.navigate(HistoryRoute) })
         }
         composable<HistoryRoute> {
-            // Sprint 4 (Danny): HistoryRoute(onEditTransaction = { id -> navController.navigate(TransactionFormRoute(id)) })
-            PlaceholderScreen(title = stringResource(R.string.nav_history))
+            HistoryContent(onEditTransaction = { id -> navController.navigate(TransactionFormRoute(id)) })
         }
         composable<BudgetRoute> {
             BudgetContent()
