@@ -34,6 +34,7 @@ class FakeTransactionRepository : TransactionRepository {
     val filters = mutableListOf<TransactionFilter>()
     var failure = false
     var readFailure = false
+    var beforeSave: suspend () -> Unit = {}
     var categoryLookup: (Long) -> Category = { Category(it, "Food", CategoryIcon.FOOD, 0xFF388E3C, TransactionType.EXPENSE, true) }
     override fun observeTransactions(filter: TransactionFilter) = items.map { list ->
         filters += filter
@@ -56,6 +57,7 @@ class FakeTransactionRepository : TransactionRepository {
             .sortedByDescending { it.totalCents }
     }
     override suspend fun saveTransaction(input: TransactionInput): Long {
+        beforeSave()
         if (failure) error("Storage failure")
         saved += input
         val id = input.id.takeIf { it != 0L } ?: ((items.value.maxOfOrNull { it.id } ?: 0) + 1)
