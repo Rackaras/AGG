@@ -24,3 +24,10 @@ local.properties
 /.idea/deviceManager.xml
 /.idea/other.xml
 /.idea/androidTestResultsUserPreferences.xml
+
+# Local development tools and agent state (not application sources).
+/odd/
+/.idea/
+/.worktrees/
+/.codegraph/
+/.atl/
