@@ -12,6 +12,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.agg.app.R
 import com.agg.app.ui.components.PlaceholderScreen
+import com.agg.app.ui.budget.BudgetRoute as BudgetContent
 import com.agg.app.ui.transaction.TransactionFormRoute as TransactionFormContent
 
 /**
@@ -41,8 +42,7 @@ fun AggNavHost(
             PlaceholderScreen(title = stringResource(R.string.nav_history))
         }
         composable<BudgetRoute> {
-            // Sprint 5 (Wagner): BudgetRoute()
-            PlaceholderScreen(title = stringResource(R.string.nav_budget))
+            BudgetContent()
         }
         composable<MoreRoute> {
             // Sprint 6 (Raúl): MoreRoute(...)

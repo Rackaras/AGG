@@ -1,0 +1,24 @@
+<resources>
+    <string name="budget_title">Presupuesto</string>
+    <string name="budget_general_title">Presupuesto mensual</string>
+    <string name="budget_spent">Gastado</string>
+    <string name="budget_available">Disponible</string>
+    <string name="budget_categories">Por categoría</string>
+    <string name="budget_add_category">Añadir límite</string>
+    <string name="budget_edit">Editar</string>
+    <string name="budget_add">Configurar</string>
+    <string name="budget_no_categories">Aún no hay límites por categoría. Añade un límite para empezar.</string>
+    <string name="budget_load_error">No se pudo cargar el presupuesto.</string>
+    <string name="budget_retry">Reintentar</string>
+    <string name="budget_edit_title">Configurar presupuesto</string>
+    <string name="budget_general_option">Presupuesto general</string>
+    <string name="budget_choose_category">Categoría de gasto</string>
+    <string name="budget_amount_label">Límite mensual</string>
+    <string name="budget_save">Guardar</string>
+    <string name="budget_cancel">Cancelar</string>
+    <string name="budget_saved">Presupuesto actualizado</string>
+    <string name="budget_validation_error">Introduce un importe válido mayor que cero.</string>
+    <string name="budget_save_error">No se pudo guardar. Inténtalo de nuevo.</string>
+    <string name="budget_percent">%1$d%%</string>
+    <string name="budget_category_amounts">%1$s de %2$s</string>
+</resources>
