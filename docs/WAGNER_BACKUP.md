@@ -46,4 +46,6 @@ Las pruebas unitarias cubren balance frente a métricas mensuales, categorías, 
 
 En la rama S5, la suite unitaria completa y la compilación de los APK de la app y de pruebas finalizaron correctamente: 64 pruebas unitarias, sin fallos, errores ni omisiones. La revisión independiente de fuente no encontró bloqueos en B5.
 
-Las pruebas instrumentadas solo se compilaron: no se ejecutaron. Quedan pendientes la verificación visual, la persistencia en un entorno Android aislado y el flujo real de permisos/notificaciones. Las pruebas puras y la revisión de fuente no sustituyen esa aceptación. No se instaló la app en el teléfono ni se concedieron permisos automáticamente.
+Las pruebas instrumentadas solo se compilaron: no se ejecutaron automáticamente. El usuario confirmó una prueba manual de S5 en su teléfono Android 36.1. Las capturas aportadas muestran presupuesto de $100, gasto de $80, disponible de $20, aviso dentro de la app y notificación Android al 80 %. No se incorporan esas capturas al repositorio porque contienen información ajena a la app.
+
+La confirmación manual no equivale a una suite instrumentada exhaustiva: el resto de los recorridos propuestos se registra como confirmación del usuario, no como observación independiente de cada caso. No se concedieron permisos automáticamente ni se modificaron otras aplicaciones.
