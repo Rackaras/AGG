@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
@@ -178,14 +179,18 @@ fun TransactionFormScreen(
                     // Shortcuts adapt to the user: most used categories first (prototype order for new users).
                     val quick = form.categories.filter { it.type == form.type }.quickAccess()
                     BoxWithConstraints(Modifier.fillMaxWidth()) {
-                        val tileWidth = (maxWidth - 16.dp) / 3
-                        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        val tileWidth = with(LocalDensity.current) {
+                            ((maxWidth.roundToPx() - 2 * 8.dp.roundToPx()) / 3).toDp()
+                        }
+                        FlowRow(maxItemsInEachRow = 3, horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                             quick.forEach { category ->
                                 QuickCategoryTile(category.name, category.icon.toImageVector(), Color(category.colorArgb),
-                                    form.categoryId == category.id, enabled, Modifier.width(tileWidth)) { onCategory(category.id) }
+                                    form.categoryId == category.id, enabled,
+                                    Modifier.width(tileWidth).testTag("transaction_quick_category_${category.id}")) { onCategory(category.id) }
                             }
                             QuickCategoryTile(stringResource(R.string.transaction_new_category), Icons.Default.Add,
-                                MaterialTheme.colorScheme.onSurfaceVariant, false, enabled, Modifier.width(tileWidth), onNewCategory)
+                                MaterialTheme.colorScheme.onSurfaceVariant, false, enabled,
+                                Modifier.width(tileWidth).testTag("transaction_quick_category_new"), onNewCategory)
                         }
                     }
                     FieldLabel(stringResource(R.string.transaction_date_label))
@@ -256,7 +261,7 @@ private fun QuickCategoryTile(label: String, icon: ImageVector, color: Color, se
         Column(Modifier.heightIn(min = 68.dp).padding(6.dp), horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterVertically)) {
             Icon(icon, null, Modifier.size(27.dp), tint = color)
-            Text(label, textAlign = TextAlign.Center, style = MaterialTheme.typography.labelSmall, maxLines = 2)
+            Text(label, textAlign = TextAlign.Center, style = MaterialTheme.typography.labelSmall)
         }
     }
 }

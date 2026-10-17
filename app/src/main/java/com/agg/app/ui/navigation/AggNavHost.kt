@@ -40,13 +40,13 @@ fun AggNavHost(
         exitTransition = { ExitTransition.None },
     ) {
         composable<HomeRoute> {
-            HomeContent(onSeeAll = { navController.navigate(HistoryRoute) })
+            HomeContent(isWideLayout = isWideLayout, onSeeAll = { navController.navigate(HistoryRoute) })
         }
         composable<HistoryRoute> {
             HistoryContent(onEditTransaction = { id -> navController.navigate(TransactionFormRoute(id)) })
         }
         composable<BudgetRoute> {
-            BudgetContent()
+            BudgetContent(isWideLayout = isWideLayout)
         }
         composable<MoreRoute> {
             MoreContent(

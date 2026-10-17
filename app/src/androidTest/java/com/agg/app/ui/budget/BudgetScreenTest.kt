@@ -4,6 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -117,6 +118,23 @@ class BudgetScreenTest {
             assertEquals(1, editRequests)
             assertEquals("Nuevo celular" to "400.00", savedGoal)
         }
+    }
+
+    @Test fun goalDialogHasCloseActionThatPreservesDismissCallback() {
+        var data by mutableStateOf(initialData().copy(editingGoal = true))
+        var dismissed = 0
+        compose.setContent {
+            AGGTheme {
+                BudgetScreen(
+                    UiState.Success(data), onRetry = {}, onEditBudget = {}, onSelectCategory = {},
+                    onLimitDraftChanged = {}, onSave = {}, onDismissEditor = {},
+                    onGoalNameDraftChanged = {}, onGoalTargetDraftChanged = {}, onSaveGoal = {},
+                    onDismissGoalEditor = { dismissed++; data = data.copy(editingGoal = false) },
+                )
+            }
+        }
+        compose.onNodeWithContentDescription("Cerrar diálogo").performClick()
+        compose.runOnIdle { assertEquals(1, dismissed) }
     }
 
     @Test fun errorScreenRetryForwardsCallback() {

@@ -1,6 +1,7 @@
 <resources>
     <string name="goal_title">Meta de ahorro</string>
     <string name="goal_dialog_title">Configurar meta de ahorro</string>
+    <string name="goal_close_dialog">Cerrar diálogo</string>
     <string name="goal_configure">Configurar</string>
     <string name="goal_edit">Editar</string>
     <string name="goal_empty">Configura una meta y avanza hacia tus objetivos.</string>

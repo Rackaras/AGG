@@ -41,6 +41,31 @@ class TransactionFormScreenTest {
         }
     }
 
+    @Test fun quickCategoriesUseThreeTilesThenTwoAtPhoneWidth() {
+        val categories = listOf(
+            Category(1, "Comida", CategoryIcon.FOOD, 0xFFF5A623, TransactionType.EXPENSE, true),
+            Category(2, "Transporte", CategoryIcon.TRANSPORT, 0xFF42A5F5, TransactionType.EXPENSE, true),
+            Category(3, "Entretenimiento", CategoryIcon.ENTERTAINMENT, 0xFFAB47BC, TransactionType.EXPENSE, true),
+            Category(4, "Servicios", CategoryIcon.SERVICES, 0xFFFBC02D, TransactionType.EXPENSE, true),
+        )
+        compose.setContent {
+            AGGTheme {
+                TransactionFormScreen(UiState.Success(TransactionFormData(categories = categories)),
+                    onBack = {}, onRetry = {}, onAmount = {}, onType = {}, onCategory = {}, onDescription = {},
+                    onDate = {}, onSave = {}, onNewCategory = {})
+            }
+        }
+        val tops = listOf("transaction_quick_category_1", "transaction_quick_category_2",
+            "transaction_quick_category_3", "transaction_quick_category_4", "transaction_quick_category_new")
+            .map { compose.onNodeWithTag(it).fetchSemanticsNode().boundsInRoot.top }
+        compose.runOnIdle {
+            assertEquals(tops[0], tops[1], 1f)
+            assertEquals(tops[0], tops[2], 1f)
+            assertTrue(tops[3] > tops[0])
+            assertEquals(tops[3], tops[4], 1f)
+        }
+    }
+
     @Test fun busyFormKeepsSaveAndTypeChangesDisabled() {
         var saves = 0
         compose.setContent {

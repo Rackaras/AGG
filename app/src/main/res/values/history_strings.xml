@@ -5,6 +5,8 @@
     <string name="history_expense">Egresos</string>
     <string name="history_date">Fecha</string>
     <string name="history_date_range">%1$s — %2$s</string>
+    <string name="history_date_from">Inicio</string>
+    <string name="history_date_to">Fin</string>
     <string name="history_category">Categoría</string>
     <string name="history_all_categories">Todas las categorías</string>
     <string name="history_clear_filters">Limpiar filtros</string>

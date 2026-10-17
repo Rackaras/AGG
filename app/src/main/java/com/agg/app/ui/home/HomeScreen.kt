@@ -59,10 +59,11 @@ import kotlin.math.roundToInt
 @Composable
 fun HomeRoute(
     onSeeAll: () -> Unit,
+    isWideLayout: Boolean = false,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val state = viewModel.uiState.collectAsStateWithLifecycle().value
-    HomeScreen(state, onSeeAll, onRetry = viewModel::load)
+    HomeScreen(state, onSeeAll, onRetry = viewModel::load, isWideLayout = isWideLayout)
 }
 
 @Composable
@@ -70,7 +71,17 @@ fun HomeScreen(
     state: UiState<DashboardSnapshot>,
     onSeeAll: () -> Unit,
     onRetry: () -> Unit,
+    isWideLayout: Boolean = false,
 ) {
+    if (isWideLayout) {
+        WideHomeScreen(state, onSeeAll, onRetry)
+    } else {
+        CompactHomeScreen(state, onSeeAll, onRetry)
+    }
+}
+
+@Composable
+private fun CompactHomeScreen(state: UiState<DashboardSnapshot>, onSeeAll: () -> Unit, onRetry: () -> Unit) {
     Column(
         Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).statusBarsPadding()
             .verticalScroll(rememberScrollState()).padding(horizontal = 18.dp),
@@ -78,18 +89,57 @@ fun HomeScreen(
     ) {
         HomeHeader()
         when (state) {
-            UiState.Loading -> Box(Modifier.fillMaxWidth().height(280.dp), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-            }
-            is UiState.Error -> Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)) {
-                Column(Modifier.fillMaxWidth().padding(20.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(stringResource(R.string.home_load_error), textAlign = TextAlign.Center)
-                    Button(onClick = onRetry, modifier = Modifier.padding(top = 8.dp)) { Text(stringResource(R.string.home_retry)) }
-                }
-            }
+            UiState.Loading -> HomeLoading()
+            is UiState.Error -> HomeErrorCard(onRetry)
             is UiState.Success -> DashboardContent(state.data, onSeeAll)
         }
         Spacer(Modifier.height(12.dp))
+    }
+}
+
+/** Wide windows: totals on the left, categories and month summary on the right. */
+@Composable
+private fun WideHomeScreen(state: UiState<DashboardSnapshot>, onSeeAll: () -> Unit, onRetry: () -> Unit) {
+    Column(
+        Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).statusBarsPadding()
+            .padding(horizontal = 24.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp),
+    ) {
+        HomeHeader()
+        when (state) {
+            UiState.Loading -> HomeLoading()
+            is UiState.Error -> HomeErrorCard(onRetry)
+            is UiState.Success -> Row(
+                Modifier.fillMaxWidth().weight(1f),
+                horizontalArrangement = Arrangement.spacedBy(24.dp),
+            ) {
+                Column(Modifier.weight(1f).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                    DashboardTotals(state.data)
+                    Spacer(Modifier.height(12.dp))
+                }
+                Column(Modifier.weight(1f).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                    DashboardCategories(state.data, onSeeAll)
+                    Spacer(Modifier.height(12.dp))
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun HomeLoading() {
+    Box(Modifier.fillMaxWidth().height(280.dp), contentAlignment = Alignment.Center) {
+        CircularProgressIndicator()
+    }
+}
+
+@Composable
+private fun HomeErrorCard(onRetry: () -> Unit) {
+    Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)) {
+        Column(Modifier.fillMaxWidth().padding(20.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(stringResource(R.string.home_load_error), textAlign = TextAlign.Center)
+            Button(onClick = onRetry, modifier = Modifier.padding(top = 8.dp)) { Text(stringResource(R.string.home_retry)) }
+        }
     }
 }
 
@@ -109,11 +159,21 @@ private fun HomeHeader() {
 
 @Composable
 private fun DashboardContent(snapshot: DashboardSnapshot, onSeeAll: () -> Unit) {
+    DashboardTotals(snapshot)
+    DashboardCategories(snapshot, onSeeAll)
+}
+
+@Composable
+private fun DashboardTotals(snapshot: DashboardSnapshot) {
     BalanceCard(snapshot.balanceCents)
     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
         MetricCard(stringResource(R.string.home_income), snapshot.monthIncomeCents, true, Modifier.weight(1f))
         MetricCard(stringResource(R.string.home_expenses), snapshot.monthExpenseCents, false, Modifier.weight(1f))
     }
+}
+
+@Composable
+private fun DashboardCategories(snapshot: DashboardSnapshot, onSeeAll: () -> Unit) {
     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         Text(stringResource(R.string.home_categories), Modifier.weight(1f), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
         TextButton(onClick = onSeeAll) { Text(stringResource(R.string.home_see_all)) }
@@ -125,7 +185,7 @@ private fun DashboardContent(snapshot: DashboardSnapshot, onSeeAll: () -> Unit) 
 @Composable
 private fun BalanceCard(balanceCents: Long) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().testTag("home_balance_card"),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
     ) {
@@ -153,7 +213,7 @@ private fun MetricCard(label: String, cents: Long, income: Boolean, modifier: Mo
 
 @Composable
 private fun CategoryBreakdown(items: List<CategorySpending>) {
-    Card(shape = RoundedCornerShape(18.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
+    Card(modifier = Modifier.testTag("home_category_breakdown"), shape = RoundedCornerShape(18.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
         if (items.isEmpty()) {
             Column(Modifier.fillMaxWidth().padding(22.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                 Icon(Icons.Rounded.PieChart, null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -211,7 +271,7 @@ private fun CategoryLine(item: CategorySpending, total: Long) {
 @Composable
 private fun MonthSummary(current: Long, previous: Long?) {
     val background = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.55f)
-    Card(shape = RoundedCornerShape(18.dp), colors = CardDefaults.cardColors(containerColor = background)) {
+    Card(modifier = Modifier.testTag("home_month_summary"), shape = RoundedCornerShape(18.dp), colors = CardDefaults.cardColors(containerColor = background)) {
         Row(Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
             Surface(shape = CircleShape, color = MaterialTheme.colorScheme.primary, modifier = Modifier.size(34.dp)) {
                 Box(contentAlignment = Alignment.Center) { Icon(Icons.Rounded.PieChart, null, tint = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(20.dp)) }
@@ -242,5 +302,5 @@ private fun MonthSummary(current: Long, previous: Long?) {
 @Composable
 @androidx.compose.ui.tooling.preview.Preview(showBackground = true)
 private fun HomeScreenPreview() {
-    AGGTheme { HomeScreen(UiState.Success(DashboardSnapshot(34250, 120000, 85750, emptyList(), 95000)), {}) {} }
+    AGGTheme { HomeScreen(UiState.Success(DashboardSnapshot(34250, 120000, 85750, emptyList(), 95000)), onSeeAll = {}, onRetry = {}) }
 }

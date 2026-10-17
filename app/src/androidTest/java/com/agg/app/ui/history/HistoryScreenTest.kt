@@ -1,12 +1,15 @@
 package com.agg.app.ui.history
 
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.rememberDateRangePickerState
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import com.agg.app.domain.model.*
 import com.agg.app.ui.common.UiState
 import com.agg.app.ui.theme.AGGTheme
 import java.time.LocalDate
+import java.time.ZoneOffset
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
@@ -64,6 +67,21 @@ class HistoryScreenTest {
             assertEquals(1, categoryRequests)
             assertEquals(1, dateRequests)
         }
+    }
+
+    @Test fun dateRangePickerShowsCompactSpanishRangeHeadline() {
+        compose.setContent {
+            AGGTheme {
+                val start = LocalDate.of(2026, 10, 17).atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli()
+                val end = LocalDate.of(2026, 10, 20).atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli()
+                val picker = rememberDateRangePickerState(
+                    initialSelectedStartDateMillis = start,
+                    initialSelectedEndDateMillis = end,
+                )
+                HistoryDateRangePicker(picker)
+            }
+        }
+        compose.onNodeWithTag("history_date_range_headline").assertTextContains("17/10 — 20/10")
     }
 
     @Test fun pendingDeletionDisablesAnotherDeleteButNotEdit() {
