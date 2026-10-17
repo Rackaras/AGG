@@ -1,0 +1,20 @@
+<resources>
+    <string name="home_brand">AGG</string>
+    <string name="home_greeting">Hola, Usuario 👋</string>
+    <string name="home_balance">Balance actual</string>
+    <string name="home_balance_all_time">Ingresos menos gastos acumulados</string>
+    <string name="home_income">Ingresos</string>
+    <string name="home_expenses">Gastos</string>
+    <string name="home_categories">Gastos por categoría</string>
+    <string name="home_see_all">Ver más</string>
+    <string name="home_no_category_expenses">Aún no hay gastos este mes</string>
+    <string name="home_total">Total</string>
+    <string name="home_category_share">%1$d%%</string>
+    <string name="home_month_summary">Resumen del mes</string>
+    <string name="home_summary_no_reference">Sin gastos del mes anterior para comparar.</string>
+    <string name="home_summary_less">Has gastado %1$d%% menos que el mes anterior.</string>
+    <string name="home_summary_more">Has gastado %1$d%% más que el mes anterior.</string>
+    <string name="home_summary_same">Has gastado lo mismo que el mes anterior.</string>
+    <string name="home_load_error">No se pudo cargar tu resumen financiero.</string>
+    <string name="home_retry">Reintentar</string>
+</resources>

@@ -1,8 +1,6 @@
-> **Aviso de alcance:** Esta rama contiene únicamente S5 (Presupuestos). El dashboard pertenece a la función separada S3 (`feature/s3-dashboard`); las secciones de esta guía corresponden a sus respectivas ramas.
+# Respaldo local: Inicio y Presupuesto (S3 + S5)
 
-# Respaldo local de Wagner — S3 y S5
-
-Este documento describe las funcionalidades del respaldo local y sus límites de verificación. Los apartados indican a qué rama y unidad pertenece cada función. No es una publicación ni una atribución de trabajo a otra persona.
+Esta rama reúne la pantalla Inicio de S3 y las funciones de presupuesto, metas, alertas y avisos de S5. Este documento describe su comportamiento y los límites de verificación; no es una publicación ni una atribución de trabajo a otra persona.
 
 ## Alcance
 
@@ -10,9 +8,9 @@ Inicio muestra datos reales observados de `TransactionRepository`: balance acumu
 
 El `ObserveDashboardUseCase` calcula los límites de mes usando un `Clock` inyectado. Sus flujos son de solo lectura; no crea transacciones ni datos iniciales. `HomeViewModel` expone Loading, Success o Error mediante un único `StateFlow`; el botón de reintento vuelve a suscribirse a la lectura.
 
-El acceso «Ver más» navega al destino existente Historial, que continúa siendo su placeholder. No se agregan funciones de historial, presupuestos, metas, alertas o notificaciones en B1.
+El acceso «Ver más» navega al destino existente Historial, que continúa siendo su placeholder. La ruta de Inicio y su dashboard pertenecen a S3; las secciones siguientes describen S5.
 
-## Presupuestos (B2)
+## Presupuestos (S5 — B2)
 
 La pantalla Presupuesto observa el límite general, los límites por categoría y el consumo del mes calendario actual. Permite configurar o editar un límite general y seleccionar categorías de egreso, incluidas las que todavía no tienen presupuesto. La interfaz muestra importes, disponible y progreso sin crear valores de ejemplo en la base de datos.
 
@@ -42,10 +40,10 @@ La denegación, desactivación o excepción de consulta/solicitud/publicación c
 
 ## Pruebas y verificación
 
-Las pruebas unitarias cubren balance frente a métricas mensuales, categorías, comparación mensual, límites de calendario, progreso de ahorro histórico, límites visuales, validación y preservación del ID/fecha al editar. Los tests del ViewModel cubren estados, reactividad, borradores independientes y bloqueo de escrituras duplicadas; las pruebas de pantalla cubren callbacks de presupuesto, meta y reintento. B5 añade pruebas puras del coordinador para avisos, permiso, estado habilitado, callback de permiso y fallos de plataforma, además de comprobar el reenvío único de metadatos guardados.
+Las pruebas de S3 cubren métricas del dashboard, límites de calendario, estados/reactividad del ViewModel y callbacks de «Ver más» y «Reintentar». Las pruebas de S5 cubren progreso de ahorro, validación y preservación del ID/fecha al editar, borradores independientes, bloqueo de escrituras duplicadas, callbacks de pantalla y política de avisos/permisos/fallos de plataforma.
 
-En la rama S5, la suite unitaria completa y la compilación de los APK de la app y de pruebas finalizaron correctamente: 64 pruebas unitarias, sin fallos, errores ni omisiones. La revisión independiente de fuente no encontró bloqueos en B5.
+Antes de incorporar S3 desde main, S5 contaba con 64 pruebas unitarias aprobadas. Tras resolver los conflictos e incorporar el Dashboard, la suite combinada S3+S5 finalizó correctamente: 70 pruebas unitarias, sin fallos ni omisiones, y compilación correcta de los APK de la app y de pruebas. La revisión independiente de fuente confirmó que se conservaron las rutas, los callbacks de guardado/notificación y los helpers de pruebas de ambos sprints.
 
-Las pruebas instrumentadas solo se compilaron: no se ejecutaron automáticamente. El usuario confirmó una prueba manual de S5 en su teléfono Android 36.1. Las capturas aportadas muestran presupuesto de $100, gasto de $80, disponible de $20, aviso dentro de la app y notificación Android al 80 %. No se incorporan esas capturas al repositorio porque contienen información ajena a la app.
+Las pruebas instrumentadas solo se compilaron; no se ejecutaron automáticamente. La prueba manual en teléfono descrita a continuación corresponde a S5 antes de esta sincronización y no se presenta como una nueva prueba del contexto combinado.
 
-La confirmación manual no equivale a una suite instrumentada exhaustiva: el resto de los recorridos propuestos se registra como confirmación del usuario, no como observación independiente de cada caso. No se concedieron permisos automáticamente ni se modificaron otras aplicaciones.
+El usuario confirmó una prueba manual de S5 en su teléfono Android 36.1. Las capturas aportadas muestran presupuesto de $100, gasto de $80, disponible de $20, aviso dentro de la app y notificación Android al 80 %. No se incorporan al repositorio porque contienen información ajena a la app. Esta confirmación no equivale a una suite instrumentada exhaustiva: los demás recorridos no se afirman como observados independientemente. No se concedieron permisos automáticamente ni se modificaron otras aplicaciones.
