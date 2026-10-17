@@ -1,0 +1,8 @@
+<resources>
+    <string name="budget_notification_channel">Alertas de presupuesto</string>
+    <string name="budget_notification_title">Presupuesto</string>
+    <string name="budget_notification_message">Se alcanzó el %1$d%% del presupuesto de %2$s.</string>
+    <string name="budget_notice_crossing">Se cruzó un umbral de presupuesto. Revisa tu progreso.</string>
+    <string name="budget_notice_evaluation">El gasto se guardó, pero no se pudo comprobar el presupuesto.</string>
+    <string name="budget_notice_dismiss">Cerrar aviso</string>
+</resources>
