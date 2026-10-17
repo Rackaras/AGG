@@ -33,8 +33,11 @@ class FakeTransactionRepository : TransactionRepository {
     val deleted = mutableListOf<Long>()
     val filters = mutableListOf<TransactionFilter>()
     var failure = false
+    var readFailure = false
+    var beforeSave: suspend () -> Unit = {}
     var categoryLookup: (Long) -> Category = { Category(it, "Food", CategoryIcon.FOOD, 0xFF388E3C, TransactionType.EXPENSE, true) }
     override fun observeTransactions(filter: TransactionFilter) = items.map { list ->
+        if (readFailure) error("Read failure")
         filters += filter
         list.filter { (filter.type == null || it.type == filter.type) &&
             (filter.categoryId == null || it.category.id == filter.categoryId) &&
@@ -44,10 +47,18 @@ class FakeTransactionRepository : TransactionRepository {
     override fun observeTransaction(id: Long) = items.map { list -> list.find { it.id == id } }
     override suspend fun getTransaction(id: Long) = items.value.find { it.id == id }
     override fun observeTotal(type: TransactionType, from: LocalDate?, to: LocalDate?) = items.map { list ->
+        if (readFailure) error("Read failure")
         list.filter { it.type == type && (from == null || it.date >= from) && (to == null || it.date <= to) }.sumOf { it.amountCents }
     }
-    override fun observeExpensesByCategory(from: LocalDate, to: LocalDate) = items.map { emptyList<CategorySpending>() }
+    override fun observeExpensesByCategory(from: LocalDate, to: LocalDate) = items.map { list ->
+        if (readFailure) error("Read failure")
+        list.filter { it.type == TransactionType.EXPENSE && it.date >= from && it.date <= to }
+            .groupBy { it.category }
+            .map { (category, transactions) -> CategorySpending(category, transactions.sumOf { it.amountCents }) }
+            .sortedByDescending { it.totalCents }
+    }
     override suspend fun saveTransaction(input: TransactionInput): Long {
+        beforeSave()
         if (failure) error("Storage failure")
         saved += input
         val id = input.id.takeIf { it != 0L } ?: ((items.value.maxOfOrNull { it.id } ?: 0) + 1)

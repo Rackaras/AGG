@@ -13,7 +13,10 @@ import org.junit.Test
 class AddTransactionUseCaseTest {
     private val categories = FakeCategories()
     private val transactions = FakeTransactions()
-    private val useCase = AddTransactionUseCase(transactions, categories)
+    private val budgets = com.agg.app.testutil.FakeBudgetRepository()
+    private val useCase = AddTransactionUseCase(
+        transactions, categories, EvaluateBudgetAlertsUseCase(budgets, transactions),
+    )
     private val input = TransactionInput(
         type = TransactionType.EXPENSE, amountCents = 850, categoryId = 1,
         date = LocalDate.of(2026, 10, 15), description = null,

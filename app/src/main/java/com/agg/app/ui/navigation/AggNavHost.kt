@@ -6,15 +6,16 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.agg.app.R
-import com.agg.app.ui.components.PlaceholderScreen
+import com.agg.app.domain.model.BudgetAlert
+import com.agg.app.ui.budget.BudgetRoute as BudgetContent
 import com.agg.app.ui.more.MoreRoute as MoreContent
 import com.agg.app.ui.more.categories.CategoriesRoute as CategoriesContent
 import com.agg.app.ui.more.summary.MonthlySummaryRoute as MonthlySummaryContent
+import com.agg.app.ui.history.HistoryRoute as HistoryContent
+import com.agg.app.ui.home.HomeRoute as HomeContent
 import com.agg.app.ui.transaction.TransactionFormRoute as TransactionFormContent
 
 /**
@@ -28,6 +29,7 @@ fun AggNavHost(
     /** True on wide windows (landscape, foldables, tablets): screens use two-pane layouts. */
     isWideLayout: Boolean = false,
     onFormBusyChanged: (Boolean) -> Unit = {},
+    onBudgetSaved: (List<BudgetAlert>, Boolean) -> Unit = { _, _ -> },
 ) {
     NavHost(
         navController = navController,
@@ -38,16 +40,13 @@ fun AggNavHost(
         exitTransition = { ExitTransition.None },
     ) {
         composable<HomeRoute> {
-            // Sprint 3 (Wagner): HomeRoute(onSeeAllClick = ..., onSummaryClick = ...)
-            PlaceholderScreen(title = stringResource(R.string.nav_home))
+            HomeContent(onSeeAll = { navController.navigate(HistoryRoute) })
         }
         composable<HistoryRoute> {
-            // Sprint 4 (Danny): HistoryRoute(onEditTransaction = { id -> navController.navigate(TransactionFormRoute(id)) })
-            PlaceholderScreen(title = stringResource(R.string.nav_history))
+            HistoryContent(onEditTransaction = { id -> navController.navigate(TransactionFormRoute(id)) })
         }
         composable<BudgetRoute> {
-            // Sprint 5 (Wagner): BudgetRoute()
-            PlaceholderScreen(title = stringResource(R.string.nav_budget))
+            BudgetContent()
         }
         composable<MoreRoute> {
             MoreContent(
@@ -67,7 +66,11 @@ fun AggNavHost(
             enterTransition = { slideIntoContainer(SlideDirection.Up, tween(FORM_ANIMATION_MS)) },
             popExitTransition = { slideOutOfContainer(SlideDirection.Down, tween(FORM_ANIMATION_MS)) },
         ) {
-            TransactionFormContent(onBack = { navController.popBackStack() }, onBusyChanged = onFormBusyChanged)
+            TransactionFormContent(
+                onBack = { navController.popBackStack() },
+                onBusyChanged = onFormBusyChanged,
+                onSaved = onBudgetSaved,
+            )
         }
     }
 }

@@ -1,42 +1,36 @@
-# Trabajo de Danny — Sprint 2: Nueva transacción
+# Trabajo de Danny — Transacciones e historial (S2 + S4)
 
-Esta rama contiene S1 y el formulario S2 corregido según la maqueta. No implementa Historial (S4), Inicio, Presupuesto ni Más: esos destinos conservan sus pantallas provisionales. El formulario permite editar por ID, pero el acceso desde la lista corresponde a S4.
+Esta rama conserva el formulario de transacciones de S2 y lo integra con el Historial de S4. La sincronización también mantiene Inicio y Presupuesto/meta/avisos de main; esas pantallas y comportamientos no se redefinen aquí. Más (S6) permanece fuera de alcance.
 
-## Probar Nueva transacción
+## Nueva transacción y edición (S2)
 
-1. Abrir **+**, elegir **Ingreso** o **Gasto**, escribir el monto y seleccionar una categoría en el desplegable o los accesos rápidos.
+1. Abrir **+**, elegir **Ingreso** o **Gasto**, escribir el monto y seleccionar una categoría en el desplegable o en los accesos rápidos.
 2. Guardar. La fecha predeterminada es hoy y la descripción es opcional (registro rápido).
 3. Para otra fecha, tocar el campo de fecha y usar el calendario.
 4. Para una categoría propia, tocar **Nueva categoría**, escribir el nombre y elegir ícono/color. La categoría pertenece al tipo seleccionado.
-5. Comprobar la persistencia al cerrar y abrir la app cuando se disponga de un dispositivo desbloqueado.
 
 Se admiten punto o coma decimal y hasta dos decimales: `8.50` y `8,50` se guardan como `850` centavos. No se redondean importes con más decimales. El monto debe ser mayor que cero. Cambiar el tipo descarta una categoría incompatible. Una edición conserva ID y fecha salvo cambios explícitos.
 
-## Diseño y navegación
+El formulario y el diálogo de categoría siguen las referencias `images/02-nueva-transaccion.png` y `images/05-dialogo-nueva-categoria.png`. La barra inferior **Inicio · Historial · + · Presupuesto · Más** permanece visible durante la edición. **+** no duplica un formulario abierto; mientras se guarda una transacción o categoría, la navegación queda deshabilitada. Al terminar o salir se restablece.
 
-Referencias: `images/02-nueva-transaccion.png` y `images/05-dialogo-nueva-categoria.png`. El formulario usa píldoras, monto destacado, campos suaves, selector completo y accesos rápidos, fecha localizada y botón de ancho completo. El diálogo conserva todos los íconos, la paleta de seis colores, cierre y acciones inferiores.
+## Historial (S4)
 
-La barra conserva **Inicio · Historial · + · Presupuesto · Más** y permanece visible en el formulario. Tocar **+** con un formulario abierto no abre otra copia. Durante el guardado de una transacción o categoría se deshabilita la navegación; al salir del formulario se restablece. No se importó la implementación de Historial al conectar el callback de ocupación.
+1. Abrir **Historial**: los registros aparecen agrupados por mes, del más reciente al más antiguo.
+2. Usar **Todos / Ingresos / Egresos** y los filtros **Fecha** y **Categoría**. El rango incluye ambos días; **Limpiar filtros** vuelve a mostrar todo.
+3. Desde el menú de un registro, elegir **Editar**. Se abre el formulario existente; al guardar y volver, la lista se actualiza desde Room conservando los filtros.
+4. **Eliminar** oculta temporalmente el registro y ofrece **Deshacer**. Deshacer lo vuelve a mostrar sin modificar la base de datos.
+5. Cerrar el aviso o dejar que termine confirma la eliminación. Si falla, el registro reaparece y se informa el error. No se inicia otra eliminación mientras haya una pendiente.
 
-## Código para explicar
+La presentación sigue `images/03-historial.png`: pestañas en píldoras, filas compactas con separadores y círculos pastel para íconos. La lupa abre la búsqueda existente por categoría y ajustes abre el rango de fechas; no se agregó búsqueda libre ni botones sin acción. Las fechas usan formato corto y distinguen hoy. Cambiar de pantalla o mandar la app al fondo no confirma el borrado: el aviso se ofrece de nuevo al volver si el ViewModel sigue vivo. Si termina el proceso antes de confirmar, el registro permanece guardado.
 
-- `domain/usecase/AddTransactionUseCase.kt`: valida monto, categoría/tipo y existencia del registro antes de editar.
-- `ui/transaction/TransactionFormViewModel.kt`: estado único, categorías reactivas, protección contra doble envío y eventos por Channel.
-- `ui/transaction/TransactionFormScreen.kt`: Route observa el ViewModel con lifecycle; Screen recibe estado y callbacks.
-- `ui/components/PrototypeControls.kt`: presentación reutilizable sin dependencias de Historial.
-- `ui/navigation/AggNavHost.kt`: conserva pantallas provisionales de otros sprints; conecta solamente el formulario y su callback de ocupación.
+## Integración y límites
+
+`AggNavHost` conserva una única ruta consumidora de los eventos del formulario, conecta History y el formulario y retiene las rutas reales de Inicio y Presupuesto. El callback opcional de notificación mantiene su valor por defecto; una falla en la entrega de notificaciones no vuelve a guardar ni impide regresar tras un guardado confirmado. La raíz conserva la barra, el estado ocupado, el Snackbar de presupuesto y el launcher de permisos. No se rediseñan Inicio o Presupuesto y no se implementa S6.
+
+Los fakes compartidos conservan filtros, errores de lectura/eliminación/deshacer, totales por categoría/mes y el hook previo a guardar.
 
 ## Verificación
 
-```bash
-./gradlew :app:testDebugUnitTest :app:assembleDebug :app:assembleDebugAndroidTest
-./gradlew :app:connectedDebugAndroidTest
-```
+En el contexto integrado S4 + main, la suite completa finalizó correctamente con 82 pruebas unitarias, sin fallos ni omisiones. También compilaron los APK de la app y de pruebas; la revisión independiente de fuente no encontró bloqueos en la conciliación.
 
-Las pruebas instrumentadas requieren teléfono/emulador desbloqueado y con pantalla activa. Compilarlas no equivale a ejecutarlas. Si aparece `No compose hierarchies found`, comprobar primero que el host esté visible, no detrás del bloqueo. No se da por cerrada la aceptación visual ni la persistencia real solo por compilar.
-
-## Integración en orden
-
-1. PR S1 (`feature/s1-data-layer`) hacia `main`, revisado por Wagner.
-2. PR S2 corregido (`feature/s2-transaction-form`) sobre S1 mientras esté pendiente; tras integrar S1, cambiar su base a `main` y obtener revisión de Raúl.
-3. Integrar S4 por separado después de S2. No usar la rama S4 para saltar esta separación.
+Las pruebas instrumentadas solo se compilaron, no se ejecutaron. No se afirma una nueva aceptación visual, persistencia real ni prueba en teléfono de esta combinación.

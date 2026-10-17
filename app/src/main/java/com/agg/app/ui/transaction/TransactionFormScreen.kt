@@ -52,6 +52,7 @@ fun TransactionFormRoute(
     onBack: () -> Unit,
     viewModel: TransactionFormViewModel = hiltViewModel(),
     onBusyChanged: (Boolean) -> Unit = {},
+    onSaved: (List<BudgetAlert>, Boolean) -> Unit = { _, _ -> },
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val data = (state as? UiState.Success)?.data
@@ -69,7 +70,15 @@ fun TransactionFormRoute(
         lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
             viewModel.events.collect { event ->
                 when (event) {
-                    FormEvent.Saved -> onBack()
+                    is FormEvent.Saved -> {
+                        try {
+                            onSaved(event.budgetAlerts, event.budgetEvaluationWarning)
+                        } catch (_: Exception) {
+                            // Optional notification delivery cannot keep a confirmed save on the form.
+                        } finally {
+                            onBack()
+                        }
+                    }
                     FormEvent.CategoryAdded -> categoryDialog = false
                 }
             }
