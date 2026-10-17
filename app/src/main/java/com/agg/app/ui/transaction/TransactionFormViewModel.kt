@@ -36,7 +36,10 @@ data class TransactionFormData(
 )
 
 sealed interface FormEvent {
-    data object Saved : FormEvent
+    data class Saved(
+        val budgetAlerts: List<BudgetAlert> = emptyList(),
+        val budgetEvaluationWarning: Boolean = false,
+    ) : FormEvent
     data object CategoryAdded : FormEvent
 }
 
@@ -120,7 +123,9 @@ class TransactionFormViewModel internal constructor(
                 val input = TransactionInput(data.id, data.type, cents, data.categoryId, data.date,
                     data.description.trim().takeIf { it.isNotEmpty() })
                 when (val result = addTransaction(input)) {
-                    is SaveTransactionResult.Saved -> eventChannel.send(FormEvent.Saved)
+                    is SaveTransactionResult.Saved -> eventChannel.send(
+                        FormEvent.Saved(result.budgetAlerts, result.budgetEvaluationWarning),
+                    )
                     is SaveTransactionResult.Invalid -> setError(when (result.reason) {
                         TransactionValidationError.AMOUNT -> R.string.transaction_amount_error
                         TransactionValidationError.CATEGORY -> R.string.transaction_category_error

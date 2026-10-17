@@ -6,6 +6,8 @@ import com.agg.app.domain.usecase.EvaluateBudgetAlertsUseCase
 import com.agg.app.testutil.*
 import com.agg.app.ui.common.UiState
 import java.time.LocalDate
+import java.time.YearMonth
+import kotlinx.coroutines.async
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -42,7 +44,21 @@ class TransactionFormViewModelTest {
         assertEquals(1, transactions.saved.size)
         assertEquals(850L, transactions.saved.single().amountCents)
         assertNull(transactions.saved.single().description)
-        assertEquals(FormEvent.Saved, model.events.first())
+        assertEquals(FormEvent.Saved(), model.events.first())
+    }
+
+    @Test fun `successful save forwards exact threshold metadata once`() = runTest {
+        budgets.items.value = listOf(Budget(42, null, 1000))
+        val model = model()
+        runCurrent()
+        model.setAmount("8.50")
+        model.setCategory(1)
+        model.save()
+        model.save()
+        runCurrent()
+
+        assertEquals(1, transactions.saved.size)
+        assertEquals(FormEvent.Saved(listOf(BudgetAlert(42, YearMonth.now(), 80)), false), model.events.first())
     }
 
     @Test fun `edit loads existing values and saves same id`() = runTest {
@@ -99,8 +115,10 @@ class TransactionFormViewModelTest {
         model.setAmount("8.50")
         model.setCategory(1)
         transactions.failure = true
+        val event = backgroundScope.async { model.events.first() }
         model.save()
         runCurrent()
+        assertFalse(event.isCompleted)
         assertEquals("8.50", model.data().amount)
         assertFalse(model.data().saving)
         assertNotNull(model.data().error)

@@ -3,11 +3,24 @@ package com.agg.app.ui
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.LaunchedEffect
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.ui.platform.LocalContext
+import android.Manifest
+import com.agg.app.R
+import com.agg.app.notification.AndroidBudgetNotificationPort
+import com.agg.app.notification.BudgetNotificationCoordinator
+import com.agg.app.domain.model.BudgetAlert
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -36,8 +49,37 @@ fun AggApp(
     val selectedTopLevel = currentDestination?.topLevelDestination()
     val isFormOpen = currentDestination?.hasRoute<TransactionFormRoute>() == true
     var formBusy by remember { mutableStateOf(false) }
+    val snackbarHostState = remember { SnackbarHostState() }
+    var notificationNotice by remember { mutableStateOf<String?>(null) }
+    var noticeSequence by remember { mutableIntStateOf(0) }
+    val pendingPermissionResult = remember { mutableStateOf<((Boolean) -> Unit)?>(null) }
+    val permissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        pendingPermissionResult.value?.invoke(granted)
+        pendingPermissionResult.value = null
+    }
+    val context = LocalContext.current.applicationContext
+    val notificationPort = remember(context, permissionLauncher) {
+        AndroidBudgetNotificationPort(context) { callback ->
+            pendingPermissionResult.value = callback
+            permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
+    val notificationCoordinator = remember(notificationPort) { BudgetNotificationCoordinator(notificationPort) }
+
+    LaunchedEffect(noticeSequence) {
+        notificationNotice?.let { message ->
+            snackbarHostState.currentSnackbarData?.dismiss()
+            snackbarHostState.showSnackbar(
+                message = message,
+                actionLabel = context.getString(R.string.budget_notice_dismiss),
+                withDismissAction = true,
+                duration = SnackbarDuration.Indefinite,
+            )
+        }
+    }
 
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         bottomBar = {
             // The approved prototype retains navigation while creating/editing a transaction.
@@ -59,6 +101,16 @@ fun AggApp(
             navController = navController,
             modifier = Modifier.padding(innerPadding),
             onFormBusyChanged = { formBusy = it },
+            onBudgetSaved = { alerts: List<BudgetAlert>, evaluationWarning: Boolean ->
+                notificationCoordinator.onSaved(alerts, evaluationWarning) {
+                    notificationNotice = when {
+                        alerts.isNotEmpty() -> context.getString(R.string.budget_notice_crossing)
+                        evaluationWarning -> context.getString(R.string.budget_notice_evaluation)
+                        else -> null
+                    }
+                    if (notificationNotice != null) noticeSequence++
+                }
+            },
         )
     }
 }

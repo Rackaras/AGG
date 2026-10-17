@@ -11,6 +11,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.agg.app.R
+import com.agg.app.domain.model.BudgetAlert
 import com.agg.app.ui.components.PlaceholderScreen
 import com.agg.app.ui.budget.BudgetRoute as BudgetContent
 import com.agg.app.ui.transaction.TransactionFormRoute as TransactionFormContent
@@ -24,6 +25,7 @@ fun AggNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier,
     onFormBusyChanged: (Boolean) -> Unit = {},
+    onBudgetSaved: (List<BudgetAlert>, Boolean) -> Unit = { _, _ -> },
 ) {
     NavHost(
         navController = navController,
@@ -53,7 +55,11 @@ fun AggNavHost(
             enterTransition = { slideIntoContainer(SlideDirection.Up, tween(FORM_ANIMATION_MS)) },
             popExitTransition = { slideOutOfContainer(SlideDirection.Down, tween(FORM_ANIMATION_MS)) },
         ) {
-            TransactionFormContent(onBack = { navController.popBackStack() }, onBusyChanged = onFormBusyChanged)
+            TransactionFormContent(
+                onBack = { navController.popBackStack() },
+                onBusyChanged = onFormBusyChanged,
+                onSaved = onBudgetSaved,
+            )
         }
     }
 }
