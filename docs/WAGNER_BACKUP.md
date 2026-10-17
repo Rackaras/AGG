@@ -20,8 +20,14 @@ Al guardar, el monto se valida como centavos positivos con el parser existente. 
 
 Las metas y alertas/notificaciones todavía no forman parte de B2; corresponden a B3–B5. Las pruebas usan repositorios falsos aislados. No se instala este respaldo en el teléfono ni se cambian sus datos sin autorización específica.
 
+## Meta de ahorro (B3)
+
+Presupuesto incluye una tarjeta reactiva de meta de ahorro y un diálogo para crear o editarla. Si todavía no hay una meta, la tarjeta permite configurarla sin mostrar importes ficticios. La meta se guarda mediante el repositorio existente; el caso de uso valida un nombre no vacío y un objetivo positivo, y reutiliza el ID de la meta activa al editar para que la fecha de creación se conserve.
+
+El progreso no se almacena: se deriva de los ingresos y gastos acumulados de todos los tiempos, limitando el ahorro calculado a cero como mínimo. La barra visual se limita al 100 %, mientras que el importe ahorrado conserva su valor exacto y la meta se considera completa comparando centavos `Long`. Los borradores de meta y presupuesto permanecen independientes; una escritura activa bloquea envíos duplicados o el inicio de otra edición. Cancelar no escribe. Alertas y notificaciones siguen pendientes para B4 y B5.
+
 ## Pruebas y verificación
 
-Las pruebas unitarias cubren balance frente a métricas mensuales, categorías, comparación mensual, límites de calendario, actualizaciones reactivas, estados del ViewModel y ausencia de escrituras. Las pruebas de pantalla cubren métricas visibles y callbacks de «Ver más» y «Reintentar».
+Las pruebas unitarias cubren balance frente a métricas mensuales, categorías, comparación mensual, límites de calendario, progreso de ahorro histórico, límites visuales, validación y preservación del ID/fecha al editar. Los tests del ViewModel cubren estados, reactividad, borradores independientes y bloqueo de escrituras duplicadas; las pruebas de pantalla cubren callbacks de presupuesto, meta y reintento.
 
 Las pruebas/builds Gradle son responsabilidad del controlador principal y deben ejecutarse allí. Esta documentación no afirma verificación visual en dispositivo ni aprobación de las pruebas.

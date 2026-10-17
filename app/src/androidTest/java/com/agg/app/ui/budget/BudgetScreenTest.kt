@@ -83,6 +83,42 @@ class BudgetScreenTest {
         compose.runOnIdle { assertEquals(transport.id, data.editingCategoryId) }
     }
 
+    @Test fun goalConfigurationActionAndDialogUseControlledFieldsAndForwardSave() {
+        var data by mutableStateOf(initialData())
+        var editRequests = 0
+        var savedGoal: Pair<String, String>? = null
+        compose.setContent {
+            AGGTheme {
+                BudgetScreen(
+                    UiState.Success(data),
+                    onRetry = {},
+                    onEditBudget = {},
+                    onSelectCategory = {},
+                    onLimitDraftChanged = {},
+                    onSave = {},
+                    onDismissEditor = {},
+                    onEditGoal = { editRequests++; data = data.copy(editingGoal = true) },
+                    onGoalNameDraftChanged = { value -> data = data.copy(goalNameDraft = value) },
+                    onGoalTargetDraftChanged = { value -> data = data.copy(goalTargetDraft = value) },
+                    onSaveGoal = { savedGoal = data.goalNameDraft to data.goalTargetDraft },
+                    onDismissGoalEditor = { data = data.copy(editingGoal = false) },
+                )
+            }
+        }
+
+        compose.onNodeWithText("Configura una meta y avanza hacia tus objetivos.").assertExists()
+        compose.onNodeWithText("Configurar").assertExists()
+        compose.onNodeWithTag("goal-edit").performClick()
+        compose.onNodeWithTag("goal-name-input").performTextInput("Nuevo celular")
+        compose.onNodeWithTag("goal-target-input").performTextInput("400.00")
+        compose.onNodeWithText("Guardar").performClick()
+
+        compose.runOnIdle {
+            assertEquals(1, editRequests)
+            assertEquals("Nuevo celular" to "400.00", savedGoal)
+        }
+    }
+
     @Test fun errorScreenRetryForwardsCallback() {
         var retries = 0
         compose.setContent {
