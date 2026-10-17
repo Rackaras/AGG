@@ -9,6 +9,7 @@ class FakeBudgetRepository : BudgetRepository {
     val items = MutableStateFlow<List<Budget>>(emptyList())
     val writes = mutableListOf<BudgetWrite>()
     var failure = false
+    var readFailure = false
     var beforeWrite: suspend () -> Unit = {}
     var categoryLookup: (Long) -> com.agg.app.domain.model.Category = { id ->
         com.agg.app.domain.model.Category(
@@ -17,7 +18,10 @@ class FakeBudgetRepository : BudgetRepository {
         )
     }
 
-    override fun observeBudgets(): Flow<List<Budget>> = items
+    override fun observeBudgets(): Flow<List<Budget>> {
+        if (readFailure) error("Read failure")
+        return items
+    }
 
     override suspend fun setGeneralBudget(limitCents: Long) {
         beforeWrite()

@@ -2,6 +2,7 @@ package com.agg.app.ui.transaction
 
 import com.agg.app.domain.model.*
 import com.agg.app.domain.usecase.AddTransactionUseCase
+import com.agg.app.domain.usecase.EvaluateBudgetAlertsUseCase
 import com.agg.app.testutil.*
 import com.agg.app.ui.common.UiState
 import java.time.LocalDate
@@ -19,11 +20,14 @@ class TransactionFormViewModelTest {
     private val dispatcher = StandardTestDispatcher()
     private val categories = FakeCategoryRepository()
     private val transactions = FakeTransactionRepository()
+    private val budgets = FakeBudgetRepository()
     @Before fun setup() { Dispatchers.setMain(dispatcher) }
     @After fun teardown() { Dispatchers.resetMain() }
     private fun model(id: Long = 0) = TransactionFormViewModel(
         id, transactions, categories,
-        AddTransactionUseCase(transactions, categories),
+        AddTransactionUseCase(
+            transactions, categories, EvaluateBudgetAlertsUseCase(budgets, transactions),
+        ),
     )
     private fun TransactionFormViewModel.data() = (uiState.value as UiState.Success).data
 

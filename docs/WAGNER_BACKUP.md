@@ -24,7 +24,13 @@ Las metas y alertas/notificaciones todavía no forman parte de B2; corresponden 
 
 Presupuesto incluye una tarjeta reactiva de meta de ahorro y un diálogo para crear o editarla. Si todavía no hay una meta, la tarjeta permite configurarla sin mostrar importes ficticios. La meta se guarda mediante el repositorio existente; el caso de uso valida un nombre no vacío y un objetivo positivo, y reutiliza el ID de la meta activa al editar para que la fecha de creación se conserve.
 
-El progreso no se almacena: se deriva de los ingresos y gastos acumulados de todos los tiempos, limitando el ahorro calculado a cero como mínimo. La barra visual se limita al 100 %, mientras que el importe ahorrado conserva su valor exacto y la meta se considera completa comparando centavos `Long`. Los borradores de meta y presupuesto permanecen independientes; una escritura activa bloquea envíos duplicados o el inicio de otra edición. Cancelar no escribe. Alertas y notificaciones siguen pendientes para B4 y B5.
+El progreso no se almacena: se deriva de los ingresos y gastos acumulados de todos los tiempos, limitando el ahorro calculado a cero como mínimo. La barra visual se limita al 100 %, mientras que el importe ahorrado conserva su valor exacto y la meta se considera completa comparando centavos `Long`. Los borradores de meta y presupuesto permanecen independientes; una escritura activa bloquea envíos duplicados o el inicio de otra edición. Cancelar no escribe. Las notificaciones y alertas de transacciones siguen pendientes para B4 y B5.
+
+## Alertas de presupuesto (B4 — dominio)
+
+Al crear o editar un gasto, el caso de uso calcula los cruces de 80 % y 100 % usando el consumo del mes de la fecha del gasto. Un salto que cruce ambos umbrales produce solo la alerta del nivel más alto por presupuesto; una edición descuenta el gasto anterior únicamente cuando corresponde al mismo mes y ámbito. Los cálculos de umbral usan aritmética exacta para evitar desbordamientos.
+
+La evaluación se prepara antes de guardar. Las alertas y el indicador de advertencia de evaluación se devuelven únicamente después de que la escritura financiera termina correctamente. Una falla ordinaria al leer presupuestos/consumos no bloquea el guardado; la cancelación sí se propaga. Los gastos sobre el límite siguen permitidos. Esta unidad cubre el dominio y los resultados del guardado; Snackbar, canal, permiso y notificación Android pertenecen a B5 y aún están pendientes.
 
 ## Pruebas y verificación
 
