@@ -145,7 +145,9 @@ fun TransactionFormScreen(
             )
         },
     ) { padding ->
-        Column(Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(horizontal = 20.dp, vertical = 8.dp),
+        // consumeWindowInsets + imePadding: the content shrinks above the keyboard and the focused
+        // field (e.g. the description) scrolls into view instead of being hidden behind it.
+        Column(Modifier.fillMaxSize().padding(padding).consumeWindowInsets(padding).imePadding().verticalScroll(rememberScrollState()).padding(horizontal = 20.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)) {
             when (state) {
                 UiState.Loading -> CircularProgressIndicator()
@@ -173,10 +175,8 @@ fun TransactionFormScreen(
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal))
                     FieldLabel(stringResource(R.string.transaction_category))
                     CategorySelector(form.categories.filter { it.type == form.type }, form.categoryId, enabled, onCategory)
-                    val preferredIcons = listOf(CategoryIcon.FOOD, CategoryIcon.TRANSPORT, CategoryIcon.ENTERTAINMENT, CategoryIcon.SERVICES)
-                    val available = form.categories.filter { it.type == form.type }
-                    val quick = (preferredIcons.mapNotNull { icon -> available.firstOrNull { it.icon == icon } } + available)
-                        .distinctBy { it.id }.take(4)
+                    // Shortcuts adapt to the user: most used categories first (prototype order for new users).
+                    val quick = form.categories.filter { it.type == form.type }.quickAccess()
                     BoxWithConstraints(Modifier.fillMaxWidth()) {
                         val tileWidth = (maxWidth - 16.dp) / 3
                         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -262,11 +262,11 @@ private fun QuickCategoryTile(label: String, icon: ImageVector, color: Color, se
 }
 
 // User-selectable category data follows the six-color prototype palette, not the app theme.
-private val categoryColors = listOf(0xFF008C5AL, 0xFF42A5F5L, 0xFFAB47BCL, 0xFFFBC02DL, 0xFFEF5350L, 0xFF90A4AEL)
+internal val categoryColors = listOf(0xFF008C5AL, 0xFF42A5F5L, 0xFFAB47BCL, 0xFFFBC02DL, 0xFFEF5350L, 0xFF90A4AEL)
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun NewCategoryDialog(
+internal fun NewCategoryDialog(
     name: String, icon: CategoryIcon, colorIndex: Int, busy: Boolean, error: Int?,
     onName: (String) -> Unit, onIcon: (CategoryIcon) -> Unit, onColor: (Int) -> Unit,
     onDismiss: () -> Unit, onSave: () -> Unit,

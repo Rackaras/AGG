@@ -42,7 +42,7 @@ class TransactionDaoTest {
         transactionDao = database.transactionDao()
         categoryDao = database.categoryDao()
 
-        val categories = categoryDao.observeAll(null).first()
+        val categories = categoryDao.observeAll(null).first().map { it.category }
         food = categories.first { it.name == "Comida" }
         transport = categories.first { it.name == "Transporte" }
         salary = categories.first { it.name == "Sueldo" }
@@ -53,7 +53,7 @@ class TransactionDaoTest {
 
     @Test
     fun seedCallback_insertsDefaultCategories() = runTest {
-        val categories = categoryDao.observeAll(null).first()
+        val categories = categoryDao.observeAll(null).first().map { it.category }
         assertEquals(DefaultCategories.all.size, categories.size)
         assertTrue(categories.all { it.isDefault })
     }

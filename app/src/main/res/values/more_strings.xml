@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Más -->
+    <string name="more_title">Más</string>
+    <string name="more_summary">Resumen mensual</string>
+    <string name="more_summary_description">Compara ingresos, gastos y balance con el mes anterior</string>
+    <string name="more_categories">Categorías</string>
+    <string name="more_categories_description">Crea y organiza tus categorías</string>
+    <string name="more_about">Acerca de AGG</string>
+    <string name="more_about_description">Versión, equipo y propósito de la app</string>
+    <string name="more_about_body">AGG te ayuda a registrar, categorizar y visualizar tus ingresos y gastos para mantener el control de tu presupuesto de forma simple y visual. Funciona sin conexión: tus datos se guardan solo en este dispositivo.\n\nVersión %1$s\n\nDanny Espinoza · Raúl Cedeño · Wagner Zambrano</string>
+    <string name="more_close">Cerrar</string>
+
+    <!-- Resumen mensual -->
+    <string name="summary_previous_month">Mes anterior</string>
+    <string name="summary_next_month">Mes siguiente</string>
+    <string name="summary_balance">Balance del mes</string>
+    <string name="summary_income">Ingresos</string>
+    <string name="summary_expenses">Gastos</string>
+    <string name="summary_vs_previous">vs. mes anterior: %1$s</string>
+    <string name="summary_change_up">↑ %1$d%%</string>
+    <string name="summary_change_down">↓ %1$d%%</string>
+    <string name="summary_no_comparison">Sin datos del mes anterior</string>
+    <string name="summary_insight_title">Resumen del mes</string>
+    <string name="summary_insight_less">Has gastado %1$d%% menos que el mes anterior.</string>
+    <string name="summary_insight_more">Has gastado %1$d%% más que el mes anterior.</string>
+    <string name="summary_insight_same">Has gastado lo mismo que el mes anterior.</string>
+    <string name="summary_insight_first">Aún no hay gastos del mes anterior para comparar.</string>
+    <string name="summary_insight_empty">No hay movimientos registrados en este mes.</string>
+    <string name="summary_by_category">Gastos por categoría</string>
+    <string name="summary_no_expenses">No hay gastos en este mes.</string>
+    <string name="summary_share">%1$d%%</string>
+    <string name="summary_error">No se pudo cargar el resumen.</string>
+
+    <!-- Categorías -->
+    <string name="categories_expenses">Gastos</string>
+    <string name="categories_income">Ingresos</string>
+    <string name="categories_add">Nueva categoría</string>
+    <string name="categories_default">Predefinida</string>
+    <string name="categories_delete">Eliminar %1$s</string>
+    <string name="categories_delete_title">¿Eliminar categoría?</string>
+    <string name="categories_delete_body">Se eliminará «%1$s». Esta acción no se puede deshacer.</string>
+    <string name="categories_delete_confirm">Eliminar</string>
+    <string name="categories_cancel">Cancelar</string>
+    <string name="categories_added">Categoría creada</string>
+    <string name="categories_deleted">Categoría eliminada</string>
+    <string name="categories_in_use">No se puede eliminar: tiene transacciones registradas.</string>
+    <string name="categories_is_default">Las categorías predefinidas no se pueden eliminar.</string>
+    <string name="categories_name_error">Escribe un nombre para la categoría.</string>
+    <string name="categories_storage_error">No se pudo guardar. Intenta de nuevo.</string>
+    <string name="categories_error">No se pudieron cargar las categorías.</string>
+    <string name="categories_empty">Aún no hay categorías de este tipo.</string>
+</resources>

@@ -3,9 +3,13 @@ package com.agg.app.ui
 import android.Manifest
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -31,19 +35,28 @@ import com.agg.app.notification.AndroidBudgetNotificationPort
 import com.agg.app.notification.BudgetNotificationCoordinator
 import com.agg.app.ui.navigation.AggBottomBar
 import com.agg.app.ui.navigation.AggNavHost
+import com.agg.app.ui.navigation.AggNavigationRail
+import com.agg.app.ui.navigation.CategoriesRoute
+import com.agg.app.ui.navigation.MonthlySummaryRoute
 import com.agg.app.ui.navigation.TopLevelDestination
 import com.agg.app.ui.navigation.TransactionFormRoute
 
 /**
- * App shell: bottom navigation + navigation graph.
+ * App shell: navigation + navigation graph.
+ *
+ * Compact windows (portrait phones) use the bottom bar. Wider windows (landscape phones,
+ * foldables, tablets) use a side NavigationRail and screens switch to two-pane layouts.
  *
  * The outer Scaffold does not consume system insets; each screen draws its own TopAppBar
  * (which already pads for the status bar).
  */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun AggApp(
+    widthSizeClass: WindowWidthSizeClass = WindowWidthSizeClass.Compact,
     navController: NavHostController = rememberNavController(),
 ) {
+    val isWideLayout = widthSizeClass != WindowWidthSizeClass.Compact
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = backStackEntry?.destination
     val selectedTopLevel = currentDestination?.topLevelDestination()
@@ -78,46 +91,73 @@ fun AggApp(
         }
     }
 
+    val onAddClick = {
+        if (!formBusy && !isFormOpen) {
+            navController.navigate(TransactionFormRoute()) { launchSingleTop = true }
+        }
+    }
+    val onDestinationClick = { destination: TopLevelDestination ->
+        if (!formBusy) {
+            // Close the form first: otherwise it stays saved inside the tab it was opened from
+            // and reappears when the user comes back to that tab.
+            if (isFormOpen) navController.popBackStack()
+            navController.navigateToTopLevel(destination)
+        }
+    }
+    // The approved prototype retains navigation while creating/editing a transaction.
+    val showNavigation = selectedTopLevel != null || isFormOpen
+    // While typing, the keyboard covers the bottom bar; hiding it gives that space to the form.
+    val showBottomBar = showNavigation && !isWideLayout && !WindowInsets.isImeVisible
+
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         bottomBar = {
-            // The approved prototype retains navigation while creating/editing a transaction.
-            if (selectedTopLevel != null || isFormOpen) {
+            if (showBottomBar) {
                 AggBottomBar(
                     selectedDestination = selectedTopLevel,
                     enabled = !formBusy,
-                    onDestinationClick = { if (!formBusy) navController.navigateToTopLevel(it) },
-                    onAddClick = {
-                        if (!formBusy && !isFormOpen) {
-                            navController.navigate(TransactionFormRoute()) { launchSingleTop = true }
-                        }
-                    },
+                    onDestinationClick = onDestinationClick,
+                    onAddClick = onAddClick,
                 )
             }
         },
     ) { innerPadding ->
-        AggNavHost(
-            navController = navController,
-            modifier = Modifier.padding(innerPadding),
-            onFormBusyChanged = { formBusy = it },
-            onBudgetSaved = { alerts: List<BudgetAlert>, evaluationWarning: Boolean ->
-                notificationCoordinator.onSaved(alerts, evaluationWarning) {
-                    notificationNotice = when {
-                        alerts.isNotEmpty() -> context.getString(R.string.budget_notice_crossing)
-                        evaluationWarning -> context.getString(R.string.budget_notice_evaluation)
-                        else -> null
+        Row(Modifier.padding(innerPadding)) {
+            if (showNavigation && isWideLayout) {
+                AggNavigationRail(
+                    selectedDestination = selectedTopLevel,
+                    enabled = !formBusy,
+                    onDestinationClick = onDestinationClick,
+                    onAddClick = onAddClick,
+                )
+            }
+            AggNavHost(
+                navController = navController,
+                isWideLayout = isWideLayout,
+                modifier = Modifier.weight(1f),
+                onFormBusyChanged = { formBusy = it },
+                onBudgetSaved = { alerts: List<BudgetAlert>, evaluationWarning: Boolean ->
+                    notificationCoordinator.onSaved(alerts, evaluationWarning) {
+                        notificationNotice = when {
+                            alerts.isNotEmpty() -> context.getString(R.string.budget_notice_crossing)
+                            evaluationWarning -> context.getString(R.string.budget_notice_evaluation)
+                            else -> null
+                        }
+                        if (notificationNotice != null) noticeSequence++
                     }
-                    if (notificationNotice != null) noticeSequence++
-                }
-            },
-        )
+                },
+            )
+        }
     }
 }
 
 private fun NavDestination.topLevelDestination(): TopLevelDestination? =
     TopLevelDestination.entries.firstOrNull { destination ->
         hierarchy.any { it.hasRoute(destination.route::class) }
+    } ?: TopLevelDestination.MORE.takeIf {
+        // Screens opened from "Más" keep that tab highlighted.
+        hasRoute<MonthlySummaryRoute>() || hasRoute<CategoriesRoute>()
     }
 
 /** Switches tabs keeping a single copy of each tab and restoring its previous state. */

@@ -6,14 +6,14 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.agg.app.R
 import com.agg.app.domain.model.BudgetAlert
 import com.agg.app.ui.budget.BudgetRoute as BudgetContent
-import com.agg.app.ui.components.PlaceholderScreen
+import com.agg.app.ui.more.MoreRoute as MoreContent
+import com.agg.app.ui.more.categories.CategoriesRoute as CategoriesContent
+import com.agg.app.ui.more.summary.MonthlySummaryRoute as MonthlySummaryContent
 import com.agg.app.ui.history.HistoryRoute as HistoryContent
 import com.agg.app.ui.home.HomeRoute as HomeContent
 import com.agg.app.ui.transaction.TransactionFormRoute as TransactionFormContent
@@ -26,6 +26,8 @@ import com.agg.app.ui.transaction.TransactionFormRoute as TransactionFormContent
 fun AggNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier,
+    /** True on wide windows (landscape, foldables, tablets): screens use two-pane layouts. */
+    isWideLayout: Boolean = false,
     onFormBusyChanged: (Boolean) -> Unit = {},
     onBudgetSaved: (List<BudgetAlert>, Boolean) -> Unit = { _, _ -> },
 ) {
@@ -47,8 +49,17 @@ fun AggNavHost(
             BudgetContent()
         }
         composable<MoreRoute> {
-            // Sprint 6 (Raúl): MoreRoute(...)
-            PlaceholderScreen(title = stringResource(R.string.nav_more))
+            MoreContent(
+                isWideLayout = isWideLayout,
+                onOpenSummary = { navController.navigate(MonthlySummaryRoute) },
+                onOpenCategories = { navController.navigate(CategoriesRoute) },
+            )
+        }
+        composable<MonthlySummaryRoute> {
+            MonthlySummaryContent(onBack = { navController.popBackStack() }, isWideLayout = isWideLayout)
+        }
+        composable<CategoriesRoute> {
+            CategoriesContent(onBack = { navController.popBackStack() })
         }
         composable<TransactionFormRoute>(
             // The form slides up over the current tab and slides back down when closed.

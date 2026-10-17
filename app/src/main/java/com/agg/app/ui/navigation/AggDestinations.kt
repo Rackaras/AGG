@@ -28,6 +28,14 @@ data object BudgetRoute
 @Serializable
 data object MoreRoute
 
+/** Monthly close vs previous month (RF10). Opened from "Más". */
+@Serializable
+data object MonthlySummaryRoute
+
+/** Category management: list, create and delete custom categories (RF04). Opened from "Más". */
+@Serializable
+data object CategoriesRoute
+
 /** Create (`transactionId == 0`) or edit an existing transaction (RF01, RF02, RF09). */
 @Serializable
 data class TransactionFormRoute(val transactionId: Long = 0L)
