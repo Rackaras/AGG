@@ -15,6 +15,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -37,7 +38,9 @@ class HomeViewModelTest {
         assertEquals(UiState.Loading, viewModel.uiState.value)
         runCurrent()
 
-        assertTrue(viewModel.uiState.value is UiState.Success)
+        val state = viewModel.uiState.value
+        assertTrue(state is UiState.Success)
+        assertTrue("amounts start visible", (state as UiState.Success).data.amountsVisible)
         assertEquals(0, transactions.saved.size)
         assertEquals(0, transactions.deleted.size)
     }
@@ -52,5 +55,33 @@ class HomeViewModelTest {
         assertTrue(viewModel.uiState.value is UiState.Error)
         assertEquals(0, transactions.saved.size)
         assertEquals(0, transactions.deleted.size)
+    }
+
+    @Test fun `eye toggle hides and reveals amounts through the single screen state`() = runTest {
+        val viewModel = HomeViewModel(useCase)
+        runCurrent()
+        assertTrue(viewModel.uiState.value is UiState.Success)
+
+        viewModel.toggleAmountsVisibility()
+        runCurrent()
+        assertFalse((viewModel.uiState.value as UiState.Success).data.amountsVisible)
+
+        viewModel.toggleAmountsVisibility()
+        runCurrent()
+        assertTrue((viewModel.uiState.value as UiState.Success).data.amountsVisible)
+    }
+
+    @Test fun `reloading the dashboard keeps the amounts hidden`() = runTest {
+        val viewModel = HomeViewModel(useCase)
+        runCurrent()
+        viewModel.toggleAmountsVisibility()
+        runCurrent()
+
+        viewModel.load()
+        runCurrent()
+
+        val state = viewModel.uiState.value
+        assertTrue(state is UiState.Success)
+        assertFalse((state as UiState.Success).data.amountsVisible)
     }
 }

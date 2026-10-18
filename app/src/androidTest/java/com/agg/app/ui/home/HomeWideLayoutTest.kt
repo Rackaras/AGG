@@ -3,9 +3,12 @@ package com.agg.app.ui.home
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.unit.dp
 import com.agg.app.domain.model.Category
 import com.agg.app.domain.model.CategoryIcon
@@ -39,7 +42,7 @@ class HomeWideLayoutTest {
         compose.setContent {
             AGGTheme {
                 Box(Modifier.requiredSize(width = 840.dp, height = 1400.dp)) {
-                    HomeScreen(UiState.Success(snapshot()), onSeeAll = {}, onRetry = {}, isWideLayout = true)
+                    HomeScreen(UiState.Success(HomeScreenData(snapshot(), amountsVisible = true)), onSeeAll = {}, onRetry = {}, isWideLayout = true)
                 }
             }
         }
@@ -56,7 +59,7 @@ class HomeWideLayoutTest {
     @Test fun compactWindowKeepsDashboardInSingleColumn() {
         compose.setContent {
             AGGTheme {
-                HomeScreen(UiState.Success(snapshot()), onSeeAll = {}, onRetry = {}, isWideLayout = false)
+                HomeScreen(UiState.Success(HomeScreenData(snapshot(), amountsVisible = true)), onSeeAll = {}, onRetry = {}, isWideLayout = false)
             }
         }
 
@@ -71,5 +74,21 @@ class HomeWideLayoutTest {
             "expected one shared column, balance=$balance summary=$summary",
             summary.left.value <= balance.left.value + 1f,
         )
+    }
+
+    /** Both layout branches share the card composables, so the wide one hides the same amounts. */
+    @Test fun wideWindowHidesEveryAmountAndKeepsPercentagesWhenAmountsAreOff() {
+        compose.setContent {
+            AGGTheme {
+                Box(Modifier.requiredSize(width = 840.dp, height = 1400.dp)) {
+                    HomeScreen(UiState.Success(HomeScreenData(snapshot(), amountsVisible = false)), onSeeAll = {}, onRetry = {}, isWideLayout = true)
+                }
+            }
+        }
+
+        // Balance, Ingresos, Gastos, the donut centre total and the single category amount.
+        compose.onAllNodesWithText("••••").assertCountEquals(5)
+        compose.onNodeWithText("$342.50").assertDoesNotExist()
+        compose.onNodeWithText("100%").assertExists()
     }
 }

@@ -5,6 +5,9 @@
     <string name="home_profile">Perfil</string>
     <string name="home_balance">Balance actual</string>
     <string name="home_balance_all_time">Ingresos menos gastos acumulados</string>
+    <string name="home_amount_hidden">••••</string>
+    <string name="home_hide_amounts">Ocultar importes</string>
+    <string name="home_show_amounts">Mostrar importes</string>
     <string name="home_income">Ingresos</string>
     <string name="home_expenses">Gastos</string>
     <string name="home_categories">Gastos por categoría</string>
