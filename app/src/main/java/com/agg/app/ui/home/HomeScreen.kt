@@ -1,5 +1,8 @@
 package com.agg.app.ui.home
 
+import android.os.Build
+import android.os.UserManager
+import android.provider.Settings
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -20,8 +23,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowDownward
 import androidx.compose.material.icons.rounded.ArrowUpward
+import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.PieChart
-import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -32,11 +35,13 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -63,7 +68,26 @@ fun HomeRoute(
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val state = viewModel.uiState.collectAsStateWithLifecycle().value
-    HomeScreen(state, onSeeAll, onRetry = viewModel::load, isWideLayout = isWideLayout)
+    HomeScreen(state, onSeeAll, onRetry = viewModel::load, isWideLayout = isWideLayout, greetingName = rememberGreetingName())
+}
+
+/** The person's profile name if the platform has one, else the phone's own name, else the fallback. */
+@Composable
+private fun rememberGreetingName(): String {
+    val context = LocalContext.current
+    val fallback = stringResource(R.string.home_default_name)
+    return remember(context, fallback) {
+        // UserManager.userName only exists from API 33; older devices skip to the device name.
+        val profileName = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            runCatching { context.getSystemService(UserManager::class.java)?.userName }.getOrNull()
+        } else null
+        val deviceName = runCatching {
+            Settings.Global.getString(context.contentResolver, "device_name")
+        }.getOrNull()
+        profileName?.takeIf { it.isNotBlank() }
+            ?: deviceName?.takeIf { it.isNotBlank() }
+            ?: fallback
+    }
 }
 
 @Composable
@@ -72,22 +96,23 @@ fun HomeScreen(
     onSeeAll: () -> Unit,
     onRetry: () -> Unit,
     isWideLayout: Boolean = false,
+    greetingName: String = "",
 ) {
     if (isWideLayout) {
-        WideHomeScreen(state, onSeeAll, onRetry)
+        WideHomeScreen(state, onSeeAll, onRetry, greetingName)
     } else {
-        CompactHomeScreen(state, onSeeAll, onRetry)
+        CompactHomeScreen(state, onSeeAll, onRetry, greetingName)
     }
 }
 
 @Composable
-private fun CompactHomeScreen(state: UiState<DashboardSnapshot>, onSeeAll: () -> Unit, onRetry: () -> Unit) {
+private fun CompactHomeScreen(state: UiState<DashboardSnapshot>, onSeeAll: () -> Unit, onRetry: () -> Unit, greetingName: String) {
     Column(
         Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).statusBarsPadding()
             .verticalScroll(rememberScrollState()).padding(horizontal = 18.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
-        HomeHeader()
+        HomeHeader(greetingName)
         when (state) {
             UiState.Loading -> HomeLoading()
             is UiState.Error -> HomeErrorCard(onRetry)
@@ -99,13 +124,13 @@ private fun CompactHomeScreen(state: UiState<DashboardSnapshot>, onSeeAll: () ->
 
 /** Wide windows: totals on the left, categories and month summary on the right. */
 @Composable
-private fun WideHomeScreen(state: UiState<DashboardSnapshot>, onSeeAll: () -> Unit, onRetry: () -> Unit) {
+private fun WideHomeScreen(state: UiState<DashboardSnapshot>, onSeeAll: () -> Unit, onRetry: () -> Unit, greetingName: String) {
     Column(
         Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).statusBarsPadding()
             .padding(horizontal = 24.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
-        HomeHeader()
+        HomeHeader(greetingName)
         when (state) {
             UiState.Loading -> HomeLoading()
             is UiState.Error -> HomeErrorCard(onRetry)
@@ -144,7 +169,7 @@ private fun HomeErrorCard(onRetry: () -> Unit) {
 }
 
 @Composable
-private fun HomeHeader() {
+private fun HomeHeader(greetingName: String) {
     Row(Modifier.fillMaxWidth().padding(top = 12.dp, bottom = 2.dp).testTag("home_header"), verticalAlignment = Alignment.CenterVertically) {
         // The AGG mark itself, as in the prototype, instead of a generic leaf in a circle.
         Icon(
@@ -155,9 +180,21 @@ private fun HomeHeader() {
         )
         Column(Modifier.padding(start = 10.dp).weight(1f)) {
             Text(stringResource(R.string.home_brand), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-            Text(stringResource(R.string.home_greeting), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(
+                stringResource(
+                    R.string.home_greeting,
+                    greetingName.ifBlank { stringResource(R.string.home_default_name) },
+                ),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
-        Icon(Icons.Rounded.Visibility, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+        // The prototype shows the user profile here; the decorative eye it replaces did nothing.
+        Icon(
+            Icons.Rounded.Person,
+            contentDescription = stringResource(R.string.home_profile),
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 

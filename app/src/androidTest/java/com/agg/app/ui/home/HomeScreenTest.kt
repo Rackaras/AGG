@@ -20,6 +20,25 @@ import org.junit.Test
 class HomeScreenTest {
     @get:Rule val compose = createComposeRule()
 
+    @Test fun headerGreetsTheProfileNameAndShowsTheProfileIcon() {
+        val empty = DashboardSnapshot(0, 0, 0, emptyList(), null)
+        compose.setContent {
+            AGGTheme {
+                HomeScreen(UiState.Success(empty), onSeeAll = {}, onRetry = {}, greetingName = "Danny")
+            }
+        }
+        compose.onNodeWithText("Hola, Danny 👋").assertIsDisplayed()
+        compose.onNodeWithContentDescription("Perfil").assertIsDisplayed()
+    }
+
+    @Test fun headerFallsBackToTheGenericGreetingWithoutAProfileName() {
+        val empty = DashboardSnapshot(0, 0, 0, emptyList(), null)
+        compose.setContent {
+            AGGTheme { HomeScreen(UiState.Success(empty), onSeeAll = {}, onRetry = {}, greetingName = "") }
+        }
+        compose.onNodeWithText("Hola, Usuario 👋").assertIsDisplayed()
+    }
+
     @Test fun headerShowsTheAggBrandMark() {
         val empty = DashboardSnapshot(0, 0, 0, emptyList(), null)
         compose.setContent {

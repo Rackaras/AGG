@@ -1,6 +1,8 @@
 <resources>
     <string name="home_brand">AGG</string>
-    <string name="home_greeting">Hola, Usuario 👋</string>
+    <string name="home_greeting">Hola, %1$s 👋</string>
+    <string name="home_default_name">Usuario</string>
+    <string name="home_profile">Perfil</string>
     <string name="home_balance">Balance actual</string>
     <string name="home_balance_all_time">Ingresos menos gastos acumulados</string>
     <string name="home_income">Ingresos</string>
