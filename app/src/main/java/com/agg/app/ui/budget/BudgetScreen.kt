@@ -24,7 +24,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.rounded.AccountBalanceWallet
 import androidx.compose.material.icons.rounded.Edit
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -32,12 +31,12 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.TextField
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -293,8 +292,8 @@ private fun SavingsGoalEditDialog(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(stringResource(R.string.goal_dialog_title), Modifier.weight(1f),
                         style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-                    androidx.compose.material3.IconButton(onClick = onDismiss, enabled = !data.savingGoal) {
-                        Icon(Icons.Filled.Close, stringResource(R.string.goal_close_dialog))
+                    IconButton(onClick = onDismiss, enabled = !data.savingGoal) {
+                        Icon(Icons.Filled.Close, stringResource(R.string.dialog_close))
                     }
                 }
                 TextField(
@@ -382,13 +381,28 @@ private fun BudgetEditDialog(
     onDismiss: () -> Unit,
 ) {
     val selectedCategory = data.editingCategoryId?.let { id -> data.overview.availableExpenseCategories.firstOrNull { it.id == id } }
-    AlertDialog(
+    Dialog(
         onDismissRequest = { if (!data.saving) onDismiss() },
-        title = { Text(stringResource(R.string.budget_edit_title)) },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                var generalExpanded by remember { mutableStateOf(false) }
+        properties = DialogProperties(usePlatformDefaultWidth = false),
+    ) {
+        Surface(
+            modifier = Modifier.widthIn(max = 400.dp).fillMaxWidth(0.94f),
+            shape = RoundedCornerShape(20.dp),
+            color = MaterialTheme.colorScheme.surface,
+        ) {
+            Column(
+                Modifier.verticalScroll(rememberScrollState()).padding(24.dp),
+                verticalArrangement = Arrangement.spacedBy(14.dp),
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(stringResource(R.string.budget_edit_title), Modifier.weight(1f),
+                        style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                    IconButton(onClick = onDismiss, enabled = !data.saving) {
+                        Icon(Icons.Filled.Close, stringResource(R.string.dialog_close))
+                    }
+                }
                 Box {
+                    var generalExpanded by remember { mutableStateOf(false) }
                     OutlinedButton(onClick = { generalExpanded = true }, enabled = !data.saving, modifier = Modifier.fillMaxWidth()) {
                         Text(if (data.editingCategoryId == null) stringResource(R.string.budget_general_option) else selectedCategory?.name ?: stringResource(R.string.budget_choose_category))
                     }
@@ -399,22 +413,25 @@ private fun BudgetEditDialog(
                         }
                     }
                 }
-                OutlinedTextField(
+                TextField(
                     value = data.limitDraft,
                     onValueChange = onLimitDraftChanged,
                     enabled = !data.saving,
-                    label = { Text(stringResource(R.string.budget_amount_label)) },
+                    placeholder = { Text(stringResource(R.string.budget_amount_label)) },
                     isError = data.error != null,
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth().testTag("budget-limit-input"),
+                    shape = RoundedCornerShape(12.dp),
                     colors = prototypeFieldColors(),
                 )
                 data.error?.let { Text(stringResource(it), color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall) }
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
+                    TextButton(onClick = onDismiss, enabled = !data.saving) { Text(stringResource(R.string.budget_cancel)) }
+                    Button(onClick = onSave, enabled = !data.saving) { Text(stringResource(R.string.budget_save)) }
+                }
             }
-        },
-        confirmButton = { Button(onClick = onSave, enabled = !data.saving) { Text(stringResource(R.string.budget_save)) } },
-        dismissButton = { TextButton(onClick = onDismiss, enabled = !data.saving) { Text(stringResource(R.string.budget_cancel)) } },
-    )
+        }
+    }
 }
 
 private fun progress(spent: Long, limit: Long?): Float =

@@ -120,6 +120,22 @@ class BudgetScreenTest {
         }
     }
 
+    @Test fun editBudgetDialogHasCloseActionThatPreservesDismissCallback() {
+        var data by mutableStateOf(initialData().copy(editing = true))
+        var dismissed = 0
+        compose.setContent {
+            AGGTheme {
+                BudgetScreen(
+                    UiState.Success(data), onRetry = {}, onEditBudget = {}, onSelectCategory = {},
+                    onLimitDraftChanged = {}, onSave = {},
+                    onDismissEditor = { dismissed++; data = data.copy(editing = false) },
+                )
+            }
+        }
+        compose.onNodeWithContentDescription("Cerrar diálogo").performClick()
+        compose.runOnIdle { assertEquals(1, dismissed) }
+    }
+
     @Test fun goalDialogHasCloseActionThatPreservesDismissCallback() {
         var data by mutableStateOf(initialData().copy(editingGoal = true))
         var dismissed = 0

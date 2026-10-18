@@ -132,7 +132,8 @@ internal fun HistoryDateRangePicker(state: DateRangePickerState) {
                     Modifier.testTag("history_date_range_headline"),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    style = MaterialTheme.typography.titleLarge,
+                    // Same typography as the single-date picker, so both dialogs read alike.
+                    style = MaterialTheme.typography.headlineMedium,
                 )
             }
         },
