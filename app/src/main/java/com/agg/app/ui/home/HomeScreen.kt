@@ -200,7 +200,7 @@ private fun HomeHeader(greetingName: String) {
             painterResource(R.drawable.ic_agg_mark),
             contentDescription = stringResource(R.string.home_logo),
             tint = Color.Unspecified,
-            modifier = Modifier.size(40.dp),
+            modifier = Modifier.size(width = 34.dp, height = 40.dp),
         )
         Column(Modifier.padding(start = 10.dp).weight(1f)) {
             Text(stringResource(R.string.home_brand), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)

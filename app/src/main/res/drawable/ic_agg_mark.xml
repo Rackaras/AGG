@@ -1,85 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  The AGG mark for the dashboard header: the app icon itself, i.e. the launcher's green
-  gradient tile with the pale three-leaf sprig on top. The group transform scales and
-  centres the launcher foreground geometry (a 108-unit canvas) inside this 44-unit tile.
+  The AGG mark for the dashboard header, following the prototype: three wide, fully rounded leaves
+  fanning from a short stem, each a different green with a white vein, and no tile behind them.
+  Each leaf is an ellipse arc pair, so neither end has a pointed tip.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:aapt="http://schemas.android.com/aapt"
-    android:width="44dp"
-    android:height="44dp"
-    android:viewportWidth="44"
+    android:width="34dp"
+    android:height="40dp"
+    android:viewportWidth="36"
     android:viewportHeight="44">
 
-    <!-- Background tile: same brand gradient as the launcher icon background layer. -->
-    <path android:pathData="M12,0 L32,0 Q44,0 44,12 L44,32 Q44,44 32,44 L12,44 Q0,44 0,32 L0,12 Q0,0 12,0 Z">
-        <aapt:attr name="android:fillColor">
-            <gradient
-                android:type="linear"
-                android:startX="0"
-                android:startY="0"
-                android:endX="44"
-                android:endY="44"
-                android:startColor="#FF2BA862"
-                android:endColor="#FF146B3A" />
-        </aapt:attr>
-    </path>
+    <!-- Stem -->
+    <path
+        android:pathData="M18,37 L18,42"
+        android:strokeWidth="3"
+        android:strokeColor="#FF2E7D32"
+        android:strokeLineCap="round" />
 
+    <!-- Left leaf -->
     <group
-        android:scaleX="0.45"
-        android:scaleY="0.45"
-        android:translateX="-2.3"
-        android:translateY="-1.6">
-
-        <!-- Stem -->
+        android:pivotX="18"
+        android:pivotY="38"
+        android:rotation="-40">
         <path
-            android:pathData="M54,72 L54,80"
-            android:strokeWidth="3"
+            android:fillColor="#FF4CAF50"
+            android:pathData="M18,12 A8.5,13 0 1,0 18,38 A8.5,13 0 1,0 18,12 Z" />
+        <path
+            android:pathData="M18,34 L18,17"
+            android:strokeWidth="1.5"
             android:strokeColor="#FFFFFFFF"
             android:strokeLineCap="round" />
+    </group>
 
-        <!-- Left leaf -->
-        <group
-            android:pivotX="54"
-            android:pivotY="74"
-            android:rotation="-42"
-            android:scaleX="0.85"
-            android:scaleY="0.85">
-            <path
-                android:fillColor="#FFE8F7EE"
-                android:pathData="M54,74 C44,64 42,44 54,30 C66,44 64,64 54,74 Z" />
-            <path
-                android:pathData="M54,70 L54,40"
-                android:strokeWidth="1.8"
-                android:strokeColor="#FF1E8E4E"
-                android:strokeLineCap="round" />
-        </group>
-
-        <!-- Right leaf -->
-        <group
-            android:pivotX="54"
-            android:pivotY="74"
-            android:rotation="42"
-            android:scaleX="0.85"
-            android:scaleY="0.85">
-            <path
-                android:fillColor="#FFE8F7EE"
-                android:pathData="M54,74 C44,64 42,44 54,30 C66,44 64,64 54,74 Z" />
-            <path
-                android:pathData="M54,70 L54,40"
-                android:strokeWidth="1.8"
-                android:strokeColor="#FF1E8E4E"
-                android:strokeLineCap="round" />
-        </group>
-
-        <!-- Centre leaf (drawn last, on top) -->
+    <!-- Right leaf -->
+    <group
+        android:pivotX="18"
+        android:pivotY="38"
+        android:rotation="40">
         <path
-            android:fillColor="#FFFFFFFF"
-            android:pathData="M54,74 C44,64 42,44 54,30 C66,44 64,64 54,74 Z" />
+            android:fillColor="#FF2E7D32"
+            android:pathData="M18,12 A8.5,13 0 1,0 18,38 A8.5,13 0 1,0 18,12 Z" />
         <path
-            android:pathData="M54,70 L54,38"
-            android:strokeWidth="1.8"
-            android:strokeColor="#FF1E8E4E"
+            android:pathData="M18,34 L18,17"
+            android:strokeWidth="1.5"
+            android:strokeColor="#FFFFFFFF"
             android:strokeLineCap="round" />
     </group>
+
+    <!-- Centre leaf, drawn last so it sits in front. -->
+    <path
+        android:fillColor="#FF7CC47F"
+        android:pathData="M18,10 A9,14 0 1,0 18,38 A9,14 0 1,0 18,10 Z" />
+    <path
+        android:pathData="M18,34 L18,15"
+        android:strokeWidth="1.5"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeLineCap="round" />
 </vector>
