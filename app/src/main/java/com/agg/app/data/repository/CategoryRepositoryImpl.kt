@@ -10,6 +10,7 @@ import com.agg.app.domain.model.CategoryIcon
 import com.agg.app.domain.model.TransactionType
 import com.agg.app.domain.repository.CategoryRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
@@ -21,7 +22,7 @@ class CategoryRepositoryImpl @Inject constructor(
     override fun observeCategories(type: TransactionType?): Flow<List<Category>> =
         categoryDao.observeAll(type).map { rows -> rows.map { it.toDomain() } }
 
-    override suspend fun getCategory(id: Long): Category? = categoryDao.getById(id)?.toDomain()
+    override suspend fun getCategory(id: Long): Category? = categoryDao.getById(id).first()?.toDomain()
 
     override suspend fun addCategory(
         name: String,
@@ -41,7 +42,7 @@ class CategoryRepositoryImpl @Inject constructor(
     override suspend fun updateCategory(category: Category) =
         categoryDao.update(category.toEntity())
 
-    override suspend fun isCategoryInUse(id: Long): Boolean = transactionDao.countByCategory(id) > 0
+    override suspend fun isCategoryInUse(id: Long): Boolean = transactionDao.countByCategory(id).first() > 0
 
     override suspend fun deleteCategory(id: Long) = categoryDao.deleteById(id)
 }

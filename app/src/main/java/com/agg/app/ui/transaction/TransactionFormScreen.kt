@@ -41,6 +41,7 @@ import com.agg.app.domain.model.*
 import com.agg.app.ui.common.UiState
 import com.agg.app.ui.components.*
 import com.agg.app.ui.theme.AGGTheme
+import com.agg.app.ui.theme.AggTheme
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneOffset
@@ -318,7 +319,7 @@ internal fun NewCategoryDialog(
                         FilledIconToggleButton(checked = colorIndex == index, enabled = !busy, onCheckedChange = { onColor(index) },
                             colors = IconButtonDefaults.filledIconToggleButtonColors(containerColor = Color(color), checkedContainerColor = Color(color))) {
                             Icon(Icons.Default.Check, stringResource(R.string.transaction_color_option, index + 1),
-                                tint = if (index == colorIndex) Color.White else Color.Transparent)
+                                tint = if (index == colorIndex) AggTheme.colors.onCategorySwatch else Color.Transparent)
                         }
                     }
                 }

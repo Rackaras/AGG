@@ -6,6 +6,7 @@ import com.agg.app.data.mapper.toDomain
 import com.agg.app.domain.model.SavingsGoal
 import com.agg.app.domain.repository.SavingsGoalRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import java.time.LocalDate
 import javax.inject.Inject
@@ -19,7 +20,7 @@ class SavingsGoalRepositoryImpl @Inject constructor(
 
     override suspend fun saveGoal(id: Long, name: String, targetCents: Long): Long {
         // Editing a goal keeps its start date, so progress keeps counting from the same day.
-        val createdAt = savingsGoalDao.getById(id)?.createdAtEpochDay ?: LocalDate.now().toEpochDay()
+        val createdAt = savingsGoalDao.getById(id).first()?.createdAtEpochDay ?: LocalDate.now().toEpochDay()
         val entity = SavingsGoalEntity(
             id = id,
             name = name.trim(),

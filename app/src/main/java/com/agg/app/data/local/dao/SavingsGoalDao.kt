@@ -13,7 +13,7 @@ interface SavingsGoalDao {
     fun observeLatest(): Flow<SavingsGoalEntity?>
 
     @Query("SELECT * FROM savings_goals WHERE id = :id")
-    suspend fun getById(id: Long): SavingsGoalEntity?
+    fun getById(id: Long): Flow<SavingsGoalEntity?>
 
     @Upsert
     suspend fun upsert(goal: SavingsGoalEntity): Long

@@ -119,7 +119,7 @@ class TransactionDaoTest {
     @Test(expected = SQLiteConstraintException::class)
     fun deletingACategoryInUse_isRejectedByTheForeignKey() = runTest {
         transactionDao.insert(expense(850, food.id, today))
-        assertEquals(1, transactionDao.countByCategory(food.id))
+        assertEquals(1, transactionDao.countByCategory(food.id).first())
         categoryDao.deleteById(food.id)
     }
 

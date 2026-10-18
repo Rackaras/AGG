@@ -39,7 +39,7 @@ interface TransactionDao {
 
     @Transaction
     @Query("SELECT * FROM transactions WHERE id = :id")
-    suspend fun getById(id: Long): TransactionWithCategory?
+    fun getById(id: Long): Flow<TransactionWithCategory?>
 
     @Query(
         """
@@ -65,7 +65,7 @@ interface TransactionDao {
     fun observeExpensesByCategory(fromEpochDay: Long, toEpochDay: Long): Flow<List<CategoryTotalRow>>
 
     @Query("SELECT COUNT(*) FROM transactions WHERE categoryId = :categoryId")
-    suspend fun countByCategory(categoryId: Long): Int
+    fun countByCategory(categoryId: Long): Flow<Int>
 
     @Insert
     suspend fun insert(transaction: TransactionEntity): Long
