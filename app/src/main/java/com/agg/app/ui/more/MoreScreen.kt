@@ -33,10 +33,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -47,8 +44,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.agg.app.R
 import com.agg.app.ui.more.categories.CategoriesRoute
+import com.agg.app.ui.common.UiState
 import com.agg.app.ui.more.summary.MonthlySummaryRoute
 import com.agg.app.ui.theme.AGGTheme
 
@@ -66,16 +66,18 @@ fun MoreRoute(
     onOpenSummary: () -> Unit,
     onOpenCategories: () -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: MoreViewModel = hiltViewModel(),
 ) {
-    var selectedSection by rememberSaveable { mutableStateOf(MoreSection.SUMMARY) }
-    var showAbout by rememberSaveable { mutableStateOf(false) }
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val data = (state as? UiState.Success)?.data ?: return
+    val selectedSection = data.selectedSection
 
     if (isWideLayout) {
         Row(modifier.fillMaxSize()) {
             MoreScreen(
                 selectedSection = selectedSection,
-                onSectionClick = { selectedSection = it },
-                onAboutClick = { showAbout = true },
+                onSectionClick = viewModel::selectSection,
+                onAboutClick = viewModel::showAbout,
                 modifier = Modifier.weight(0.4f),
             )
             VerticalDivider()
@@ -95,13 +97,13 @@ fun MoreRoute(
                     MoreSection.CATEGORIES -> onOpenCategories()
                 }
             },
-            onAboutClick = { showAbout = true },
+            onAboutClick = viewModel::showAbout,
             modifier = modifier,
         )
     }
 
-    if (showAbout) {
-        AboutDialog(onDismiss = { showAbout = false })
+    if (data.showAbout) {
+        AboutDialog(onDismiss = viewModel::dismissAbout)
     }
 }
 

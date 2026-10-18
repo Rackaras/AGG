@@ -68,6 +68,8 @@ private val DarkColorScheme = darkColorScheme(
 data class AggExtendedColors(
     val income: Color,
     val expense: Color,
+    /** Foreground for the user-selectable category palette in either theme. */
+    val onCategorySwatch: Color = Neutral100,
 )
 
 private val LightExtendedColors = AggExtendedColors(income = IncomeGreen, expense = ExpenseRed)

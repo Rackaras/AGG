@@ -10,6 +10,7 @@ import com.agg.app.domain.model.TransactionInput
 import com.agg.app.domain.model.TransactionType
 import com.agg.app.domain.repository.TransactionRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import java.time.LocalDate
 import javax.inject.Inject
@@ -30,7 +31,7 @@ class TransactionRepositoryImpl @Inject constructor(
         transactionDao.observeById(id).map { it?.toDomain() }
 
     override suspend fun getTransaction(id: Long): Transaction? =
-        transactionDao.getById(id)?.toDomain()
+        transactionDao.getById(id).first()?.toDomain()
 
     override fun observeTotal(type: TransactionType, from: LocalDate?, to: LocalDate?): Flow<Long> =
         transactionDao.observeTotal(type, from?.toEpochDay(), to?.toEpochDay())
@@ -45,7 +46,7 @@ class TransactionRepositoryImpl @Inject constructor(
             transactionDao.insert(entity)
         } else {
             // Keep the original creation time so the history order does not change on edit.
-            val createdAt = transactionDao.getById(input.id)?.transaction?.createdAt ?: entity.createdAt
+            val createdAt = transactionDao.getById(input.id).first()?.transaction?.createdAt ?: entity.createdAt
             transactionDao.update(entity.copy(createdAt = createdAt))
             input.id
         }

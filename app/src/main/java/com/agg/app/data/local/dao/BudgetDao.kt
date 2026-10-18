@@ -17,10 +17,10 @@ interface BudgetDao {
     fun observeAll(): Flow<List<BudgetWithCategory>>
 
     @Query("SELECT * FROM budgets WHERE categoryId IS NULL LIMIT 1")
-    suspend fun getGeneral(): BudgetEntity?
+    fun getGeneral(): Flow<BudgetEntity?>
 
     @Query("SELECT * FROM budgets WHERE categoryId = :categoryId LIMIT 1")
-    suspend fun getByCategory(categoryId: Long): BudgetEntity?
+    fun getByCategory(categoryId: Long): Flow<BudgetEntity?>
 
     @Upsert
     suspend fun upsert(budget: BudgetEntity): Long

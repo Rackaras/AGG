@@ -38,7 +38,7 @@ interface CategoryDao {
     fun observeAll(type: TransactionType?): Flow<List<CategoryWithUsage>>
 
     @Query("SELECT * FROM categories WHERE id = :id")
-    suspend fun getById(id: Long): CategoryEntity?
+    fun getById(id: Long): Flow<CategoryEntity?>
 
     @Insert
     suspend fun insert(category: CategoryEntity): Long
