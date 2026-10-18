@@ -71,7 +71,7 @@ fun HomeRoute(
     HomeScreen(state, onSeeAll, onRetry = viewModel::load, isWideLayout = isWideLayout, greetingName = rememberGreetingName())
 }
 
-/** The person's profile name if the platform has one, else the phone's own name, else the fallback. */
+/** The person's profile name if the platform has one, else the owner part of the device name. */
 @Composable
 private fun rememberGreetingName(): String {
     val context = LocalContext.current
@@ -85,10 +85,23 @@ private fun rememberGreetingName(): String {
             Settings.Global.getString(context.contentResolver, "device_name")
         }.getOrNull()
         profileName?.takeIf { it.isNotBlank() }
-            ?: deviceName?.takeIf { it.isNotBlank() }
+            ?: ownerNameFrom(deviceName)
             ?: fallback
     }
 }
+
+/**
+ * OEMs store the device name as "<model> de <owner>" ("<model> of <owner>" in English), so the
+ * owner part is the only bit that reads like a person. Anything else falls back to the generic
+ * greeting instead of printing a device model as if it were a name.
+ */
+private fun ownerNameFrom(deviceName: String?): String? {
+    if (deviceName.isNullOrBlank()) return null
+    val marker = DEVICE_NAME_OWNER_MARKERS.firstOrNull { deviceName.contains(it, ignoreCase = true) }
+    return marker?.let { deviceName.substringAfterLast(it, "").trim() }?.takeIf { it.isNotBlank() }
+}
+
+private val DEVICE_NAME_OWNER_MARKERS = listOf(" de ", " of ")
 
 @Composable
 fun HomeScreen(
@@ -176,7 +189,7 @@ private fun HomeHeader(greetingName: String) {
             painterResource(R.drawable.ic_agg_mark),
             contentDescription = stringResource(R.string.home_logo),
             tint = Color.Unspecified,
-            modifier = Modifier.size(width = 32.dp, height = 44.dp),
+            modifier = Modifier.size(40.dp),
         )
         Column(Modifier.padding(start = 10.dp).weight(1f)) {
             Text(stringResource(R.string.home_brand), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
