@@ -1,6 +1,8 @@
 package com.agg.app.ui.home
 
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
@@ -17,6 +19,14 @@ import org.junit.Test
 
 class HomeScreenTest {
     @get:Rule val compose = createComposeRule()
+
+    @Test fun headerShowsTheAggBrandMark() {
+        val empty = DashboardSnapshot(0, 0, 0, emptyList(), null)
+        compose.setContent {
+            AGGTheme { HomeScreen(UiState.Success(empty), onSeeAll = {}, onRetry = {}) }
+        }
+        compose.onNodeWithContentDescription("Logotipo AGG").assertIsDisplayed()
+    }
 
     @Test fun dashboardShowsFinancialMetricsAndSeeAllForwardsNavigationAction() {
         var navigations = 0

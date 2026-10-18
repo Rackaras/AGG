@@ -20,7 +20,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowDownward
 import androidx.compose.material.icons.rounded.ArrowUpward
-import androidx.compose.material.icons.rounded.Eco
 import androidx.compose.material.icons.rounded.PieChart
 import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material3.Button
@@ -39,6 +38,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -146,9 +146,13 @@ private fun HomeErrorCard(onRetry: () -> Unit) {
 @Composable
 private fun HomeHeader() {
     Row(Modifier.fillMaxWidth().padding(top = 12.dp, bottom = 2.dp).testTag("home_header"), verticalAlignment = Alignment.CenterVertically) {
-        Surface(shape = CircleShape, color = MaterialTheme.colorScheme.primaryContainer, modifier = Modifier.size(42.dp)) {
-            Box(contentAlignment = Alignment.Center) { Icon(Icons.Rounded.Eco, null, tint = MaterialTheme.colorScheme.primary) }
-        }
+        // The AGG mark itself, as in the prototype, instead of a generic leaf in a circle.
+        Icon(
+            painterResource(R.drawable.ic_agg_mark),
+            contentDescription = stringResource(R.string.home_logo),
+            tint = Color.Unspecified,
+            modifier = Modifier.size(width = 32.dp, height = 44.dp),
+        )
         Column(Modifier.padding(start = 10.dp).weight(1f)) {
             Text(stringResource(R.string.home_brand), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
             Text(stringResource(R.string.home_greeting), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The AGG brand mark: the same three-leaf sprig as the launcher icon, drawn with a tight
+  viewport and the brand green so it reads on the light app surface instead of the
+  generic Material leaf.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="32dp"
+    android:height="44dp"
+    android:viewportWidth="32"
+    android:viewportHeight="58">
+
+    <!-- Stem -->
+    <path
+        android:pathData="M16,46 L16,54"
+        android:strokeWidth="3"
+        android:strokeColor="#FF1E8E4E"
+        android:strokeLineCap="round" />
+
+    <!-- Left leaf -->
+    <group
+        android:pivotX="16"
+        android:pivotY="48"
+        android:rotation="-42"
+        android:scaleX="0.85"
+        android:scaleY="0.85">
+        <path
+            android:fillColor="#FF2E9E57"
+            android:pathData="M16,48 C6,38 4,18 16,4 C28,18 26,38 16,48 Z" />
+        <path
+            android:pathData="M16,44 L16,14"
+            android:strokeWidth="1.6"
+            android:strokeColor="#FFFFFFFF"
+            android:strokeLineCap="round" />
+    </group>
+
+    <!-- Right leaf -->
+    <group
+        android:pivotX="16"
+        android:pivotY="48"
+        android:rotation="42"
+        android:scaleX="0.85"
+        android:scaleY="0.85">
+        <path
+            android:fillColor="#FF2E9E57"
+            android:pathData="M16,48 C6,38 4,18 16,4 C28,18 26,38 16,48 Z" />
+        <path
+            android:pathData="M16,44 L16,14"
+            android:strokeWidth="1.6"
+            android:strokeColor="#FFFFFFFF"
+            android:strokeLineCap="round" />
+    </group>
+
+    <!-- Centre leaf (drawn last, on top) -->
+    <path
+        android:fillColor="#FF1E8E4E"
+        android:pathData="M16,48 C6,38 4,18 16,4 C28,18 26,38 16,48 Z" />
+    <path
+        android:pathData="M16,44 L16,12"
+        android:strokeWidth="1.6"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeLineCap="round" />
+</vector>
