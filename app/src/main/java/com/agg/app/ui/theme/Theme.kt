@@ -27,6 +27,17 @@ private val LightColorScheme = lightColorScheme(
     surface = Neutral99,
     onSurface = Neutral10,
     surfaceContainer = Neutral95,
+    surfaceContainerLowest = Neutral100,
+    surfaceContainerLow = Neutral98,
+    surfaceContainerHigh = Neutral93,
+    surfaceContainerHighest = Neutral90,
+    surfaceVariant = Neutral90,
+    onSurfaceVariant = Neutral40,
+    outline = Neutral80,
+    outlineVariant = Neutral88,
+    inverseSurface = Neutral20,
+    inverseOnSurface = Neutral95,
+    inversePrimary = AggGreenLight,
 )
 
 private val DarkColorScheme = darkColorScheme(
@@ -39,6 +50,17 @@ private val DarkColorScheme = darkColorScheme(
     onSecondaryContainer = AggGreenContainer,
     tertiary = CategoryBlue,
     error = ExpenseRedDarkTheme,
+    surfaceContainerLowest = NeutralDarkLowest,
+    surfaceContainerLow = NeutralDarkLow,
+    surfaceContainer = NeutralDark,
+    surfaceContainerHigh = NeutralDarkHigh,
+    surfaceContainerHighest = NeutralDarkHighest,
+    surfaceVariant = NeutralDarkVariant,
+    onSurfaceVariant = NeutralDarkOnVariant,
+    outline = NeutralDarkOutline,
+    outlineVariant = NeutralDarkVariant,
+    inverseSurface = Neutral95,
+    inverseOnSurface = Neutral20,
 )
 
 /** Extra semantic colors not covered by the M3 color scheme. */

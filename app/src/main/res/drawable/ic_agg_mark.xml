@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The AGG mark for the dashboard header. The geometry is exactly the launcher icon's foreground
+  layer (same paths, same groups, same rotations), so the brand stays consistent, but the leaves
+  are filled with green instead of the icon's pale tint: on the white header the pale leaves would
+  be invisible. No tile: only the leaf.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="46dp"
+    android:height="46dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Stem -->
+    <path
+        android:pathData="M54,72 L54,80"
+        android:strokeWidth="3"
+        android:strokeColor="#FF2E7D32"
+        android:strokeLineCap="round" />
+
+    <!-- Left leaf -->
+    <group
+        android:pivotX="54"
+        android:pivotY="74"
+        android:rotation="-42"
+        android:scaleX="0.85"
+        android:scaleY="0.85">
+        <path
+            android:fillColor="#FF4CAF50"
+            android:pathData="M54,74 C44,64 42,44 54,30 C66,44 64,64 54,74 Z" />
+        <path
+            android:pathData="M54,70 L54,40"
+            android:strokeWidth="1.8"
+            android:strokeColor="#FFFFFFFF"
+            android:strokeLineCap="round" />
+    </group>
+
+    <!-- Right leaf -->
+    <group
+        android:pivotX="54"
+        android:pivotY="74"
+        android:rotation="42"
+        android:scaleX="0.85"
+        android:scaleY="0.85">
+        <path
+            android:fillColor="#FF2E7D32"
+            android:pathData="M54,74 C44,64 42,44 54,30 C66,44 64,64 54,74 Z" />
+        <path
+            android:pathData="M54,70 L54,40"
+            android:strokeWidth="1.8"
+            android:strokeColor="#FFFFFFFF"
+            android:strokeLineCap="round" />
+    </group>
+
+    <!-- Centre leaf (drawn last, on top) -->
+    <path
+        android:fillColor="#FF7CC47F"
+        android:pathData="M54,74 C44,64 42,44 54,30 C66,44 64,64 54,74 Z" />
+    <path
+        android:pathData="M54,70 L54,38"
+        android:strokeWidth="1.8"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeLineCap="round" />
+</vector>

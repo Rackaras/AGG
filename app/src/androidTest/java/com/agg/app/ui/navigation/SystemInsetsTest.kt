@@ -11,6 +11,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import com.agg.app.domain.model.DashboardSnapshot
 import com.agg.app.ui.common.UiState
 import com.agg.app.ui.home.HomeScreen
+import com.agg.app.ui.home.HomeScreenData
 import com.agg.app.ui.theme.AGGTheme
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -26,7 +27,7 @@ class SystemInsetsTest {
             statusBarBottomPx = WindowInsets.statusBars.getTop(density)
             AGGTheme {
                 HomeScreen(
-                    UiState.Success(DashboardSnapshot(0, 0, 0, emptyList(), null)),
+                    UiState.Success(HomeScreenData(DashboardSnapshot(0, 0, 0, emptyList(), null), amountsVisible = true)),
                     onSeeAll = {},
                     onRetry = {},
                 )

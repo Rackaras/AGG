@@ -21,6 +21,7 @@ import com.agg.app.R
 import com.agg.app.domain.model.*
 import com.agg.app.ui.common.UiState
 import com.agg.app.ui.common.formatSignedCents
+import com.agg.app.ui.components.AggSnackbarHost
 import com.agg.app.ui.components.CategoryBadge
 import com.agg.app.ui.components.PrototypePill
 import com.agg.app.ui.theme.AGGTheme
@@ -55,7 +56,7 @@ fun HistoryScreen(
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background))
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) },
+        snackbarHost = { AggSnackbarHost(snackbarHostState) },
     ) { padding ->
         Column(Modifier.fillMaxSize().padding(padding)) {
             when (state) {

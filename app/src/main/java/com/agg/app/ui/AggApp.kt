@@ -33,6 +33,7 @@ import com.agg.app.R
 import com.agg.app.domain.model.BudgetAlert
 import com.agg.app.notification.AndroidBudgetNotificationPort
 import com.agg.app.notification.BudgetNotificationCoordinator
+import com.agg.app.ui.components.AggSnackbarHost
 import com.agg.app.ui.navigation.AggBottomBar
 import com.agg.app.ui.navigation.AggNavHost
 import com.agg.app.ui.navigation.AggNavigationRail
@@ -110,7 +111,7 @@ fun AggApp(
     val showBottomBar = showNavigation && !isWideLayout && !WindowInsets.isImeVisible
 
     Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) },
+        snackbarHost = { AggSnackbarHost(snackbarHostState) },
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         bottomBar = {
             if (showBottomBar) {

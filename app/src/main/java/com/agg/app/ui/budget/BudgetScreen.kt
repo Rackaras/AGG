@@ -11,12 +11,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.AccountBalanceWallet
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -25,14 +30,14 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
+import androidx.compose.material3.TextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.AlertDialog
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,12 +51,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.agg.app.R
 import com.agg.app.domain.model.CategoryBudgetOverview
 import com.agg.app.ui.common.UiState
 import com.agg.app.ui.common.formatCents
+import com.agg.app.ui.components.AggSnackbarHost
 import com.agg.app.ui.components.CategoryBadge
 import com.agg.app.ui.components.PrototypePill
 import com.agg.app.ui.components.prototypeFieldColors
@@ -63,7 +71,10 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Scaffold
 
 @Composable
-fun BudgetRoute(viewModel: BudgetViewModel = hiltViewModel()) {
+fun BudgetRoute(
+    isWideLayout: Boolean = false,
+    viewModel: BudgetViewModel = hiltViewModel(),
+) {
     val state = viewModel.uiState.collectAsStateWithLifecycle().value
     val snackbar = remember { SnackbarHostState() }
     val savedMessage = stringResource(R.string.budget_saved)
@@ -76,10 +87,11 @@ fun BudgetRoute(viewModel: BudgetViewModel = hiltViewModel()) {
             }
         }
     }
-    Scaffold(snackbarHost = { androidx.compose.material3.SnackbarHost(snackbar) }) { padding ->
+    Scaffold(snackbarHost = { AggSnackbarHost(snackbar) }) { padding ->
         BudgetScreen(
             state = state,
             modifier = Modifier.padding(padding),
+            isWideLayout = isWideLayout,
             onRetry = viewModel::load,
             onEditBudget = viewModel::beginEdit,
             onSelectCategory = viewModel::selectCategory,
@@ -110,6 +122,7 @@ fun BudgetScreen(
     onGoalTargetDraftChanged: (String) -> Unit = {},
     onSaveGoal: () -> Unit = {},
     onDismissGoalEditor: () -> Unit = {},
+    isWideLayout: Boolean = false,
 ) {
     when (state) {
         UiState.Loading -> Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
@@ -120,6 +133,7 @@ fun BudgetScreen(
         is UiState.Success -> BudgetContent(
             data = state.data,
             modifier = modifier,
+            isWideLayout = isWideLayout,
             onEditBudget = onEditBudget,
             onSelectCategory = onSelectCategory,
             onLimitDraftChanged = onLimitDraftChanged,
@@ -138,6 +152,7 @@ fun BudgetScreen(
 private fun BudgetContent(
     data: BudgetScreenData,
     modifier: Modifier,
+    isWideLayout: Boolean,
     onEditBudget: (Long?) -> Unit,
     onSelectCategory: (Long?) -> Unit,
     onLimitDraftChanged: (String) -> Unit,
@@ -150,30 +165,35 @@ private fun BudgetContent(
     onDismissGoalEditor: () -> Unit,
 ) {
     val busy = data.saving || data.savingGoal
-    Column(modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).padding(horizontal = 18.dp)) {
-        Row(Modifier.fillMaxWidth().padding(top = 12.dp, bottom = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-            Surface(shape = CircleShape, color = MaterialTheme.colorScheme.primaryContainer, modifier = Modifier.size(42.dp)) {
-                Box(contentAlignment = Alignment.Center) { Icon(Icons.Rounded.AccountBalanceWallet, null, tint = MaterialTheme.colorScheme.primary) }
-            }
-            Text(stringResource(R.string.budget_title), Modifier.padding(start = 10.dp), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-        }
+    Column(
+        modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)
+            .padding(horizontal = if (isWideLayout) 24.dp else 18.dp),
+    ) {
+        BudgetHeader()
         BudgetEditorTabs(onEditGoal, enabled = !busy)
-        LazyColumn(verticalArrangement = Arrangement.spacedBy(14.dp), contentPadding = androidx.compose.foundation.layout.PaddingValues(bottom = 20.dp)) {
-            item { GeneralBudgetCard(data.overview.generalSpentCents, data.overview.generalBudget?.limitCents, busy, onEditBudget) }
-            item {
-                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                    Text(stringResource(R.string.budget_categories), Modifier.weight(1f), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                    TextButton(onClick = { onEditBudget(null) }, enabled = !busy) { Text(stringResource(R.string.budget_add_category)) }
+        if (isWideLayout) {
+            // Wide windows: budget on the left, savings goal on the right (no stretched cards).
+            Row(Modifier.fillMaxWidth().weight(1f), horizontalArrangement = Arrangement.spacedBy(24.dp)) {
+                LazyColumn(
+                    Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(14.dp),
+                    contentPadding = PaddingValues(bottom = 20.dp),
+                ) {
+                    budgetCoreItems(data, busy, onEditBudget)
+                }
+                LazyColumn(
+                    Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(14.dp),
+                    contentPadding = PaddingValues(bottom = 20.dp),
+                ) {
+                    item { SavingsGoalCard(data, busy, onEditGoal) }
                 }
             }
-            if (data.overview.categoryBudgets.isEmpty()) {
-                item { Text(stringResource(R.string.budget_no_categories), color = MaterialTheme.colorScheme.onSurfaceVariant) }
-            } else {
-                items(data.overview.categoryBudgets, key = { it.category.id }) { row ->
-                    CategoryBudgetRow(row, busy) { onEditBudget(row.category.id) }
-                }
+        } else {
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(14.dp), contentPadding = PaddingValues(bottom = 20.dp)) {
+                budgetCoreItems(data, busy, onEditBudget)
+                item { SavingsGoalCard(data, busy, onEditGoal) }
             }
-            item { SavingsGoalCard(data, busy, onEditGoal) }
         }
     }
     if (data.editing) {
@@ -181,6 +201,31 @@ private fun BudgetContent(
     }
     if (data.editingGoal) {
         SavingsGoalEditDialog(data, onGoalNameDraftChanged, onGoalTargetDraftChanged, onSaveGoal, onDismissGoalEditor)
+    }
+}
+
+@Composable
+private fun BudgetHeader() {
+    Row(Modifier.fillMaxWidth().padding(top = 12.dp, bottom = 2.dp), verticalAlignment = Alignment.CenterVertically) {
+        Text(stringResource(R.string.budget_title), Modifier.padding(start = 10.dp), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+    }
+}
+
+/** Budget card + category list, shared by the single-column and two-column layouts. */
+private fun LazyListScope.budgetCoreItems(data: BudgetScreenData, busy: Boolean, onEditBudget: (Long?) -> Unit) {
+    item { GeneralBudgetCard(data.overview.generalSpentCents, data.overview.generalBudget?.limitCents, busy, onEditBudget) }
+    item {
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            Text(stringResource(R.string.budget_categories), Modifier.weight(1f), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+            TextButton(onClick = { onEditBudget(null) }, enabled = !busy) { Text(stringResource(R.string.budget_add_category)) }
+        }
+    }
+    if (data.overview.categoryBudgets.isEmpty()) {
+        item { Text(stringResource(R.string.budget_no_categories), color = MaterialTheme.colorScheme.onSurfaceVariant) }
+    } else {
+        items(data.overview.categoryBudgets, key = { it.category.id }) { row ->
+            CategoryBudgetRow(row, busy) { onEditBudget(row.category.id) }
+        }
     }
 }
 
@@ -195,7 +240,7 @@ private fun BudgetEditorTabs(onEditGoal: () -> Unit, enabled: Boolean) {
 @Composable
 private fun SavingsGoalCard(data: BudgetScreenData, busy: Boolean, onEdit: () -> Unit) {
     val progress = data.savingsGoal
-    Card(shape = RoundedCornerShape(18.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
+    Card(modifier = Modifier.testTag("budget_goal_card"), shape = RoundedCornerShape(18.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
         Column(Modifier.fillMaxWidth().padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(stringResource(R.string.goal_title), Modifier.weight(1f), style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
@@ -230,42 +275,59 @@ private fun SavingsGoalEditDialog(
     onSave: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    AlertDialog(
+    Dialog(
         onDismissRequest = { if (!data.savingGoal) onDismiss() },
-        title = { Text(stringResource(R.string.goal_dialog_title)) },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                OutlinedTextField(
+        properties = DialogProperties(usePlatformDefaultWidth = false),
+    ) {
+        Surface(
+            modifier = Modifier.widthIn(max = 400.dp).fillMaxWidth(0.94f),
+            shape = RoundedCornerShape(20.dp),
+            color = MaterialTheme.colorScheme.surface,
+        ) {
+            Column(Modifier.verticalScroll(rememberScrollState()).padding(24.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(stringResource(R.string.goal_dialog_title), Modifier.weight(1f),
+                        style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                    IconButton(onClick = onDismiss, enabled = !data.savingGoal) {
+                        Icon(Icons.Filled.Close, stringResource(R.string.dialog_close))
+                    }
+                }
+                TextField(
                     value = data.goalNameDraft,
                     onValueChange = onNameChanged,
                     enabled = !data.savingGoal,
-                    label = { Text(stringResource(R.string.goal_name_label)) },
+                    placeholder = { Text(stringResource(R.string.goal_name_label)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth().testTag("goal-name-input"),
+                    shape = RoundedCornerShape(12.dp),
                     colors = prototypeFieldColors(),
                 )
-                OutlinedTextField(
+                TextField(
                     value = data.goalTargetDraft,
                     onValueChange = onTargetChanged,
                     enabled = !data.savingGoal,
-                    label = { Text(stringResource(R.string.goal_target_label)) },
+                    placeholder = { Text(stringResource(R.string.goal_target_label)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth().testTag("goal-target-input"),
+                    shape = RoundedCornerShape(12.dp),
                     colors = prototypeFieldColors(),
                 )
-                Text(stringResource(R.string.goal_progress_caption), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(stringResource(R.string.goal_progress_caption), style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant)
                 data.goalError?.let { Text(stringResource(it), color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall) }
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
+                    TextButton(onClick = onDismiss, enabled = !data.savingGoal) { Text(stringResource(R.string.budget_cancel)) }
+                    Button(onClick = onSave, enabled = !data.savingGoal) { Text(stringResource(R.string.budget_save)) }
+                }
             }
-        },
-        confirmButton = { Button(onClick = onSave, enabled = !data.savingGoal) { Text(stringResource(R.string.budget_save)) } },
-        dismissButton = { TextButton(onClick = onDismiss, enabled = !data.savingGoal) { Text(stringResource(R.string.budget_cancel)) } },
-    )
+        }
+    }
 }
 
 @Composable
 private fun GeneralBudgetCard(spent: Long, limit: Long?, saving: Boolean, onEdit: (Long?) -> Unit) {
     val remaining = ((limit ?: 0L) - spent).coerceAtLeast(0L)
-    Card(shape = RoundedCornerShape(18.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
+    Card(modifier = Modifier.testTag("budget_general_card"), shape = RoundedCornerShape(18.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
         Column(Modifier.fillMaxWidth().padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(stringResource(R.string.budget_general_title), Modifier.weight(1f), style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
@@ -315,13 +377,28 @@ private fun BudgetEditDialog(
     onDismiss: () -> Unit,
 ) {
     val selectedCategory = data.editingCategoryId?.let { id -> data.overview.availableExpenseCategories.firstOrNull { it.id == id } }
-    AlertDialog(
+    Dialog(
         onDismissRequest = { if (!data.saving) onDismiss() },
-        title = { Text(stringResource(R.string.budget_edit_title)) },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                var generalExpanded by remember { mutableStateOf(false) }
+        properties = DialogProperties(usePlatformDefaultWidth = false),
+    ) {
+        Surface(
+            modifier = Modifier.widthIn(max = 400.dp).fillMaxWidth(0.94f),
+            shape = RoundedCornerShape(20.dp),
+            color = MaterialTheme.colorScheme.surface,
+        ) {
+            Column(
+                Modifier.verticalScroll(rememberScrollState()).padding(24.dp),
+                verticalArrangement = Arrangement.spacedBy(14.dp),
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(stringResource(R.string.budget_edit_title), Modifier.weight(1f),
+                        style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                    IconButton(onClick = onDismiss, enabled = !data.saving) {
+                        Icon(Icons.Filled.Close, stringResource(R.string.dialog_close))
+                    }
+                }
                 Box {
+                    var generalExpanded by remember { mutableStateOf(false) }
                     OutlinedButton(onClick = { generalExpanded = true }, enabled = !data.saving, modifier = Modifier.fillMaxWidth()) {
                         Text(if (data.editingCategoryId == null) stringResource(R.string.budget_general_option) else selectedCategory?.name ?: stringResource(R.string.budget_choose_category))
                     }
@@ -332,22 +409,25 @@ private fun BudgetEditDialog(
                         }
                     }
                 }
-                OutlinedTextField(
+                TextField(
                     value = data.limitDraft,
                     onValueChange = onLimitDraftChanged,
                     enabled = !data.saving,
-                    label = { Text(stringResource(R.string.budget_amount_label)) },
+                    placeholder = { Text(stringResource(R.string.budget_amount_label)) },
                     isError = data.error != null,
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth().testTag("budget-limit-input"),
+                    shape = RoundedCornerShape(12.dp),
                     colors = prototypeFieldColors(),
                 )
                 data.error?.let { Text(stringResource(it), color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall) }
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
+                    TextButton(onClick = onDismiss, enabled = !data.saving) { Text(stringResource(R.string.budget_cancel)) }
+                    Button(onClick = onSave, enabled = !data.saving) { Text(stringResource(R.string.budget_save)) }
+                }
             }
-        },
-        confirmButton = { Button(onClick = onSave, enabled = !data.saving) { Text(stringResource(R.string.budget_save)) } },
-        dismissButton = { TextButton(onClick = onDismiss, enabled = !data.saving) { Text(stringResource(R.string.budget_cancel)) } },
-    )
+        }
+    }
 }
 
 private fun progress(spent: Long, limit: Long?): Float =

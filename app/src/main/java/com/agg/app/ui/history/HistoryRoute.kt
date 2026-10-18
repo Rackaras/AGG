@@ -6,9 +6,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
@@ -20,6 +23,7 @@ import com.agg.app.ui.common.UiState
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -103,8 +107,37 @@ fun HistoryRoute(onEditTransaction: (Long) -> Unit, viewModel: HistoryViewModel 
                     TextButton(onClick = { dateDialog = false }) { Text(stringResource(R.string.history_cancel)) }
                 }
             },
-        ) { DateRangePicker(state = picker, modifier = Modifier.heightIn(max = 480.dp)) }
+        ) { HistoryDateRangePicker(picker) }
     }
+}
+
+@Composable
+internal fun HistoryDateRangePicker(state: DateRangePickerState) {
+    val formatter = remember { DateTimeFormatter.ofPattern("d/M") }
+    val start = state.selectedStartDateMillis?.let { Instant.ofEpochMilli(it).atZone(ZoneOffset.UTC).toLocalDate().format(formatter) }
+        ?: stringResource(R.string.history_date_from)
+    val end = state.selectedEndDateMillis?.let { Instant.ofEpochMilli(it).atZone(ZoneOffset.UTC).toLocalDate().format(formatter) }
+        ?: stringResource(R.string.history_date_to)
+    DateRangePicker(
+        state = state,
+        modifier = Modifier.heightIn(max = 480.dp),
+        // Mirrors the default headline metrics so the range text cannot escape the dialog card.
+        headline = {
+            Row(
+                Modifier.fillMaxWidth().heightIn(min = 56.dp).padding(horizontal = 24.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    "$start — $end",
+                    Modifier.testTag("history_date_range_headline"),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    // Same typography as the single-date picker, so both dialogs read alike.
+                    style = MaterialTheme.typography.headlineMedium,
+                )
+            }
+        },
+    )
 }
 
 private fun LocalDate.utcMillis() = atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli()
