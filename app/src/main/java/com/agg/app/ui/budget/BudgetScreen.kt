@@ -61,6 +61,7 @@ import com.agg.app.R
 import com.agg.app.domain.model.CategoryBudgetOverview
 import com.agg.app.ui.common.UiState
 import com.agg.app.ui.common.formatCents
+import com.agg.app.ui.components.AggSnackbarHost
 import com.agg.app.ui.components.CategoryBadge
 import com.agg.app.ui.components.PrototypePill
 import com.agg.app.ui.components.prototypeFieldColors
@@ -88,7 +89,7 @@ fun BudgetRoute(
             }
         }
     }
-    Scaffold(snackbarHost = { androidx.compose.material3.SnackbarHost(snackbar) }) { padding ->
+    Scaffold(snackbarHost = { AggSnackbarHost(snackbar) }) { padding ->
         BudgetScreen(
             state = state,
             modifier = Modifier.padding(padding),

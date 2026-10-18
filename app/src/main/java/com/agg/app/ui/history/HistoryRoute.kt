@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -120,7 +121,21 @@ internal fun HistoryDateRangePicker(state: DateRangePickerState) {
     DateRangePicker(
         state = state,
         modifier = Modifier.heightIn(max = 480.dp),
-        headline = { Text("$start — $end", Modifier.testTag("history_date_range_headline"), maxLines = 1, overflow = TextOverflow.Ellipsis) },
+        // Mirrors the default headline metrics so the range text cannot escape the dialog card.
+        headline = {
+            Row(
+                Modifier.fillMaxWidth().heightIn(min = 56.dp).padding(horizontal = 24.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    "$start — $end",
+                    Modifier.testTag("history_date_range_headline"),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    style = MaterialTheme.typography.titleLarge,
+                )
+            }
+        },
     )
 }
 

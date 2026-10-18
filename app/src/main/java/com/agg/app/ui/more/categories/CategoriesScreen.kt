@@ -54,6 +54,7 @@ import com.agg.app.domain.model.Category
 import com.agg.app.domain.model.CategoryIcon
 import com.agg.app.domain.model.TransactionType
 import com.agg.app.ui.common.UiState
+import com.agg.app.ui.components.AggSnackbarHost
 import com.agg.app.ui.components.CategoryBadge
 import com.agg.app.ui.components.PrototypePill
 import com.agg.app.ui.components.color
@@ -157,7 +158,7 @@ fun CategoriesScreen(
     Scaffold(
         modifier = modifier,
         containerColor = MaterialTheme.colorScheme.background,
-        snackbarHost = { SnackbarHost(snackbarHostState) },
+        snackbarHost = { AggSnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.more_categories), fontWeight = FontWeight.Bold) },

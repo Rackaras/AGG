@@ -2,6 +2,9 @@
     <string name="app_name">AGG</string>
     <string name="app_tagline">Finanzas simples, grandes decisiones</string>
 
+    <!-- Notices -->
+    <string name="snackbar_dismiss">Cerrar aviso</string>
+
     <!-- Navigation -->
     <string name="nav_home">Inicio</string>
     <string name="nav_history">Historial</string>

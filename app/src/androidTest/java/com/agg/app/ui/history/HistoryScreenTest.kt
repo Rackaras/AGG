@@ -82,6 +82,9 @@ class HistoryScreenTest {
             }
         }
         compose.onNodeWithTag("history_date_range_headline").assertTextContains("17/10 — 20/10")
+        // The headline must stay inside the dialog card instead of leaking to the screen edge.
+        val headline = compose.onNodeWithTag("history_date_range_headline").fetchSemanticsNode().boundsInRoot
+        assertTrue("headline left=${headline.left}", headline.left >= 24f)
     }
 
     @Test fun pendingDeletionDisablesAnotherDeleteButNotEdit() {
